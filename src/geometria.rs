@@ -24,16 +24,20 @@ pub struct Interseccion {
     pub material: Material,
 }
 
-pub trait Figura {
+pub trait Figura: Send + Sync {
     fn intersectar(&self, rayo: &Rayo) -> Option<Interseccion>;
 }
 
 // Cubo texturizado - nuestro elemento básico del diorama
+#[derive(Clone)]
 pub struct Cubo {
     pub centro: Point3<f64>,
     pub tamano: f64,
     pub material: Material,
 }
+
+unsafe impl Send for Cubo {}
+unsafe impl Sync for Cubo {}
 
 impl Cubo {
     pub fn nuevo(centro: Point3<f64>, tamano: f64, material: Material) -> Self {
@@ -111,11 +115,15 @@ impl Figura for Cubo {
 }
 
 // Esfera para elementos decorativos
+#[derive(Clone)]
 pub struct Esfera {
     pub centro: Point3<f64>,
     pub radio: f64,
     pub material: Material,
 }
+
+unsafe impl Send for Esfera {}
+unsafe impl Sync for Esfera {}
 
 impl Esfera {
     pub fn nueva(centro: Point3<f64>, radio: f64, material: Material) -> Self {
@@ -155,11 +163,15 @@ impl Figura for Esfera {
 }
 
 // Plano para el suelo
+#[derive(Clone)]
 pub struct Plano {
     pub punto: Point3<f64>,
     pub normal: Vector3<f64>,
     pub material: Material,
 }
+
+unsafe impl Send for Plano {}
+unsafe impl Sync for Plano {}
 
 impl Plano {
     pub fn nuevo(punto: Point3<f64>, normal: Vector3<f64>, material: Material) -> Self {

@@ -7,12 +7,18 @@ pub struct Luz {
     pub tipo_luz: TipoLuz,
 }
 
+unsafe impl Send for Luz {}
+unsafe impl Sync for Luz {}
+
 #[derive(Clone)]
 pub enum TipoLuz {
     Puntual,      // Luz que emite en todas las direcciones
     Direccional,  // Luz que viene de una dirección específica (como el sol)
     Ambiental,    // Luz uniforme en toda la escena
 }
+
+unsafe impl Send for TipoLuz {}
+unsafe impl Sync for TipoLuz {}
 
 impl Luz {
     pub fn puntual(posicion: Point3<f64>, color: Vector3<f64>, intensidad: f64) -> Self {

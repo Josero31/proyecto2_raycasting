@@ -1,6 +1,7 @@
-use nalgebra::{Vector3, Point3, Unit};
+use nalgebra::{Vector3, Point3};
 use image::{RgbImage, Rgb};
-use std::f64::consts::PI;
+use rayon::prelude::*;
+use std::sync::Arc;
 
 mod geometria;
 mod materiales;
@@ -9,15 +10,13 @@ mod iluminacion;
 mod escena;
 
 use geometria::*;
-use materiales::*;
 use camara::*;
-use iluminacion::*;
 use escena::*;
 
 const ANCHO: u32 = 800;
 const ALTO: u32 = 600;
-const MUESTRAS_ANTIALIASING: u32 = 16;
-const PROFUNDIDAD_MAXIMA: u32 = 10;
+const MUESTRAS_ANTIALIASING: u32 = 4;  // Optimizado: 4x más rápido
+const PROFUNDIDAD_MAXIMA: u32 = 5;    // Optimizado: 2x más rápido
 
 fn main() {
     println!("🎨 Iniciando renderizado del diorama...");
@@ -28,51 +27,68 @@ fn main() {
         println!("🗑️ Imagen anterior eliminada");
     }
     
-    // Configurar cámara con ZOOM GRANDÍSIMO para ver detalles
+    // Configurar cámara orbital como el proyecto original
     let terrain_size = 50.0;
+    let camera_angle = 45.0f64.to_radians(); // Ángulo orbital
+    let camera_distance = 70.0;
+    let camera_height = 45.0;
+    
+    let camera_x = terrain_size/2.0 + camera_distance * camera_angle.cos();
+    let camera_z = terrain_size/2.0 + camera_distance * camera_angle.sin();
+    
     let camara = Camara::nueva(
-        Point3::new(terrain_size/2.0 + 8.0, 12.0, terrain_size/2.0 + 8.0), // MUY CERCA con zoom extremo
-        Point3::new(terrain_size/2.0, 3.0, terrain_size/2.0),               // Mirando al centro cerca
-        Vector3::new(0.0, 1.0, 0.0),                                        // arriba
-        45.0,                                                                // Campo de visión normal para zoom
-        ANCHO as f64 / ALTO as f64                                           // aspecto
+        Point3::new(camera_x, camera_height, camera_z),   // Posición orbital
+        Point3::new(terrain_size/2.0, 0.0, terrain_size/2.0), // Mirando al centro
+        Vector3::new(0.0, 1.0, 0.0),                     // arriba
+        45.0,                                             // Campo de visión como original
+        ANCHO as f64 / ALTO as f64                        // aspecto
     );
     
-    // Crear la escena del diorama
-    let escena = crear_diorama();
+    // Crear la escena del diorama y envolver en Arc para paralelización
+    let escena = Arc::new(crear_diorama());
+    let camara = Arc::new(camara);
     
     // Crear imagen para el renderizado
     let mut imagen = RgbImage::new(ANCHO, ALTO);
     
-    // Renderizar cada pixel
-    for y in 0..ALTO {
-        if y % 50 == 0 {
-            println!("Procesando línea {} de {}", y, ALTO);
+    // Renderizado paralelo OPTIMIZADO por líneas
+    let pixels: Vec<_> = (0..ALTO).into_par_iter().flat_map(|y| {
+        let escena_ref = Arc::clone(&escena);
+        let camara_ref = Arc::clone(&camara);
+        
+        if y % 25 == 0 {
+            println!("Procesando línea {} de {} (PARALELO)", y, ALTO);
         }
         
-        for x in 0..ANCHO {
+        (0..ANCHO).into_par_iter().map(move |x| {
             let mut color = Vector3::new(0.0, 0.0, 0.0);
             
-            // Anti-aliasing con múltiples muestras
+            // Anti-aliasing OPTIMIZADO con menos muestras
             for _ in 0..MUESTRAS_ANTIALIASING {
                 let u = (x as f64 + rand::random::<f64>()) / ANCHO as f64;
                 let v = (y as f64 + rand::random::<f64>()) / ALTO as f64;
                 
-                let rayo = camara.obtener_rayo(u, v);
-                color += calcular_color(&rayo, &escena, PROFUNDIDAD_MAXIMA);
+                let rayo = camara_ref.obtener_rayo(u, v);
+                color += calcular_color(&rayo, &escena_ref, PROFUNDIDAD_MAXIMA);
             }
             
             // Promedio y corrección gamma
             color /= MUESTRAS_ANTIALIASING as f64;
             color = Vector3::new(color.x.sqrt(), color.y.sqrt(), color.z.sqrt());
             
+            
             // Convertir a RGB [0, 255]
             let r = (255.0 * color.x.clamp(0.0, 1.0)) as u8;
             let g = (255.0 * color.y.clamp(0.0, 1.0)) as u8;
             let b = (255.0 * color.z.clamp(0.0, 1.0)) as u8;
             
-            imagen.put_pixel(x, ALTO - y - 1, Rgb([r, g, b]));
-        }
+            (x, y, [r, g, b])
+        }).collect::<Vec<_>>()
+    }).collect();
+    
+    // Aplicar pixels a la imagen
+    for (x, y, color) in pixels {
+        imagen.put_pixel(x, ALTO - y - 1, Rgb(color));
     }
     
     // Guardar la imagen

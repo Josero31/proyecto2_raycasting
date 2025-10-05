@@ -30,14 +30,21 @@ fn main() {
     // Crear una versión simplificada de la escena
     let escena = crear_diorama_simplificado();
     
-    // Configurar cámara con ZOOM GRANDÍSIMO para ver detalles
-    let terrain_size = 25.0; // Terreno más pequeño para preview
+    // Configurar cámara orbital como el proyecto original (preview)
+    let terrain_size = 50.0; // Mismo tamaño que original
+    let camera_angle = 45.0f64.to_radians(); // Ángulo orbital
+    let camera_distance = 70.0;
+    let camera_height = 45.0;
+    
+    let camera_x = terrain_size/2.0 + camera_distance * camera_angle.cos();
+    let camera_z = terrain_size/2.0 + camera_distance * camera_angle.sin();
+    
     let camara = Camara::nueva(
-        Point3::new(terrain_size/2.0 + 5.0, 8.0, terrain_size/2.0 + 5.0), // MUY CERCA con zoom extremo
-        Point3::new(terrain_size/2.0, 2.0, terrain_size/2.0),              // Mirando al centro cerca
-        Vector3::new(0.0, 1.0, 0.0),
-        45.0,                                                               // Campo de visión normal para zoom
-        ANCHO as f64 / ALTO as f64
+        Point3::new(camera_x, camera_height, camera_z),   // Posición orbital
+        Point3::new(terrain_size/2.0, 0.0, terrain_size/2.0), // Mirando al centro
+        Vector3::new(0.0, 1.0, 0.0),                     // arriba
+        45.0,                                             // Campo de visión como original
+        ANCHO as f64 / ALTO as f64                        // aspecto
     );
     
     // Crear imagen para el renderizado

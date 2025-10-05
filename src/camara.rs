@@ -22,6 +22,9 @@ pub struct Camara {
     pub vertical: Vector3<f64>,
 }
 
+unsafe impl Send for Camara {}
+unsafe impl Sync for Camara {}
+
 impl Camara {
     pub fn nueva(posicion: Point3<f64>, objetivo: Point3<f64>, arriba: Vector3<f64>, 
                  campo_vision: f64, aspecto: f64) -> Self {

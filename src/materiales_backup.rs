@@ -10,6 +10,25 @@ pub struct Material {
     pub brillo: f64,                   // Intensidad del brillo especular
 }
 
+unsafe impl Send for Material {}
+unsafe impl Sync for Material {}
+
+impl Material {
+            1.0,                           // Sin refracción
+            0.8,                           // Rugoso
+            0.0                            // Sin brillo
+        )
+    }3<f64>,          // Color base del material
+    pub reflectividad: f64,            // 0.0 = mate, 1.0 = espejo perfecto
+    pub transparencia: f64,            // 0.0 = opaco, 1.0 = completamente transparente
+    pub indice_refraccion: f64,        // Índice de refracción para la transparencia
+    pub rugosidad: f64,                // Para efectos de especular
+    pub brillo: f64,                   // Intensidad del brillo especular
+}
+
+unsafe impl Send for Material {}
+unsafe impl Sync for Material {}
+
 impl Material {
     pub fn nuevo(albedo: Vector3<f64>, reflectividad: f64, transparencia: f64, 
                  indice_refraccion: f64, rugosidad: f64, brillo: f64) -> Self {
@@ -85,15 +104,15 @@ impl Material {
         )
     }
     
-    /// Agua - azul clásico de Minecraft
+    /// Agua - azul cristalino vibrante
     pub fn agua() -> Self {
         Self::nuevo(
-            Vector3::new(0.2, 0.4, 0.8),  // Azul agua Minecraft
-            0.2,                           // Algo reflectante
-            0.7,                           // Transparente
+            Vector3::new(0.1, 0.5, 1.0),  // Azul agua cristalina vibrante
+            0.3,                           // Más reflectante
+            0.8,                           // Muy transparente
             1.33,                          // Índice de refracción del agua
             0.0,                           // Suave
-            0.5                            // Algo brillante
+            0.8                            // Muy brillante
         )
     }
     
@@ -109,10 +128,10 @@ impl Material {
         )
     }
     
-    /// Tierra - café oscuro
+    /// Tierra - café rico
     pub fn tierra() -> Self {
         Self::nuevo(
-            Vector3::new(0.4, 0.3, 0.2),  // Café tierra
+            Vector3::new(0.6, 0.4, 0.2),  // Café tierra más claro
             0.0,                           // No reflectante
             0.0,                           // Opaco
             1.0,                           // Sin refracción
@@ -133,10 +152,10 @@ impl Material {
         )
     }
     
-    /// Hojas - verde más oscuro que el césped
+    /// Hojas - verde vibrante
     pub fn hojas() -> Self {
         Self::nuevo(
-            Vector3::new(0.2, 0.6, 0.1),  // Verde hojas más oscuro
+            Vector3::new(0.1, 0.8, 0.0),  // Verde hojas vibrante
             0.0,                           // No reflectante
             0.0,                           // Opaco
             1.0,                           // Sin refracción
@@ -147,31 +166,31 @@ impl Material {
     
     // NUEVOS MATERIALES COLORIDOS ESTILO MINECRAFT
     
-    /// Césped claro - verde brillante
-    pub fn cesped_claro() -> Self {
+    /// Tierra rica - más oscura y fértil
+    pub fn tierra_rica() -> Self {
         Self::nuevo(
-            Vector3::new(0.5, 1.0, 0.3),  // Verde claro brillante
-            0.0, 0.0, 1.0, 0.8, 0.0
+            Vector3::new(0.4, 0.25, 0.1), // Café tierra fértil
+            0.0, 0.0, 1.0, 1.0, 0.0
         )
     }
     
-    /// Césped oscuro - verde profundo
-    pub fn cesped_oscuro() -> Self {
+    /// Arena - amarillo brillante
+    pub fn arena() -> Self {
         Self::nuevo(
-            Vector3::new(0.15, 0.5, 0.1), // Verde oscuro
-            0.0, 0.0, 1.0, 0.8, 0.0
+            Vector3::new(0.95, 0.9, 0.6), // Amarillo arena
+            0.0, 0.0, 1.0, 0.7, 0.0
         )
     }
     
     /// Piedra oscura para montañas
     pub fn piedra_oscura() -> Self {
         Self::nuevo(
-            Vector3::new(0.3, 0.3, 0.3), // Gris piedra oscura
+            Vector3::new(0.3, 0.3, 0.35), // Gris piedra oscura
             0.0, 0.0, 1.0, 0.9, 0.0
         )
     }
     
-    /// Granito rojizo para montañas
+    /// Granito rojizo
     pub fn granito() -> Self {
         Self::nuevo(
             Vector3::new(0.7, 0.4, 0.3),  // Granito rojizo
@@ -179,57 +198,7 @@ impl Material {
         )
     }
     
-    /// Tierra rica - más oscura
-    pub fn tierra_rica() -> Self {
-        Self::nuevo(
-            Vector3::new(0.3, 0.2, 0.1), // Café tierra fértil
-            0.0, 0.0, 1.0, 1.0, 0.0
-        )
-    }
-    
-    /// Arena dorada
-    pub fn arena() -> Self {
-        Self::nuevo(
-            Vector3::new(0.9, 0.8, 0.5), // Amarillo arena
-            0.0, 0.0, 1.0, 0.7, 0.0
-        )
-    }
-    
-    /// Hojas claras
-    pub fn hojas_claras() -> Self {
-        Self::nuevo(
-            Vector3::new(0.4, 0.9, 0.2),  // Verde hojas claro
-            0.0, 0.0, 1.0, 0.9, 0.0
-        )
-    }
-    
-    /// Hojas oscuras
-    pub fn hojas_oscuras() -> Self {
-        Self::nuevo(
-            Vector3::new(0.1, 0.4, 0.05),  // Verde muy oscuro
-            0.0, 0.0, 1.0, 0.9, 0.0
-        )
-    }
-    
-    /// Tronco claro
-    pub fn tronco_claro() -> Self {
-        Self::nuevo(
-            Vector3::new(0.8, 0.6, 0.4),  // Madera clara
-            0.0, 0.0, 1.0, 0.8, 0.0
-        )
-    }
-    
-    /// Tronco oscuro
-    pub fn tronco_oscuro() -> Self {
-        Self::nuevo(
-            Vector3::new(0.4, 0.2, 0.1),  // Madera oscura
-            0.0, 0.0, 1.0, 0.8, 0.0
-        )
-    }
-    
-    // FLORES SÚPER COLORIDAS
-    
-    /// Flor roja vibrante
+    /// Flores coloridas
     pub fn flor_roja() -> Self {
         Self::nuevo(
             Vector3::new(1.0, 0.1, 0.1),  // Rojo vibrante
@@ -237,7 +206,6 @@ impl Material {
         )
     }
     
-    /// Flor amarilla pura
     pub fn flor_amarilla() -> Self {
         Self::nuevo(
             Vector3::new(1.0, 1.0, 0.0),  // Amarillo puro
@@ -245,7 +213,6 @@ impl Material {
         )
     }
     
-    /// Flor azul vibrante
     pub fn flor_azul() -> Self {
         Self::nuevo(
             Vector3::new(0.2, 0.4, 1.0),  // Azul vibrante
@@ -253,7 +220,6 @@ impl Material {
         )
     }
     
-    /// Flor rosa fucsia
     pub fn flor_rosa() -> Self {
         Self::nuevo(
             Vector3::new(1.0, 0.4, 0.8),  // Rosa fucsia
@@ -261,11 +227,55 @@ impl Material {
         )
     }
     
-    /// Flor púrpura brillante
     pub fn flor_purpura() -> Self {
         Self::nuevo(
             Vector3::new(0.7, 0.2, 1.0),  // Púrpura brillante
             0.0, 0.0, 1.0, 0.1, 0.0
+        )
+    }
+    
+    /// Variaciones de césped
+    pub fn cesped_claro() -> Self {
+        Self::nuevo(
+            Vector3::new(0.4, 1.0, 0.3),  // Verde claro brillante
+            0.0, 0.0, 1.0, 0.1, 0.0
+        )
+    }
+    
+    pub fn cesped_oscuro() -> Self {
+        Self::nuevo(
+            Vector3::new(0.15, 0.6, 0.1), // Verde oscuro
+            0.0, 0.0, 1.0, 0.1, 0.0
+        )
+    }
+    
+    /// Variaciones de hojas
+    pub fn hojas_claras() -> Self {
+        Self::nuevo(
+            Vector3::new(0.3, 1.0, 0.2),  // Verde hojas claro
+            0.0, 0.0, 1.0, 0.2, 0.0
+        )
+    }
+    
+    pub fn hojas_oscuras() -> Self {
+        Self::nuevo(
+            Vector3::new(0.0, 0.5, 0.0),  // Verde hojas muy oscuro
+            0.0, 0.0, 1.0, 0.2, 0.0
+        )
+    }
+    
+    /// Tronco variado
+    pub fn tronco_claro() -> Self {
+        Self::nuevo(
+            Vector3::new(0.8, 0.6, 0.4),  // Madera clara
+            0.0, 0.0, 1.0, 0.4, 0.0
+        )
+    }
+    
+    pub fn tronco_oscuro() -> Self {
+        Self::nuevo(
+            Vector3::new(0.4, 0.2, 0.1),  // Madera oscura
+            0.0, 0.0, 1.0, 0.4, 0.0
         )
     }
 }

@@ -8,6 +8,9 @@ pub struct Escena {
     pub luces: Vec<Luz>,
 }
 
+unsafe impl Send for Escena {}
+unsafe impl Sync for Escena {}
+
 impl Escena {
     pub fn nueva() -> Self {
         Self {
@@ -52,13 +55,13 @@ impl Escena {
     }
 }
 
-// Función para crear un diorama mejorado con mejor composición visual
+// Función para crear un diorama EXACTAMENTE como el proyecto original
 pub fn crear_diorama() -> Escena {
     let mut escena = Escena::nueva();
     
     let terrain_size = 50;
-    let river_center_x = 15; // Río más hacia un lado para mejor composición
-    let river_width = 3;     // Río un poco más estrecho
+    let river_center_x = 20; // Río centrado como original
+    let river_width = 4;     // Río del tamaño original
     
     // === TERRENO ONDULADO COMO EL ORIGINAL ===
     
@@ -121,7 +124,7 @@ pub fn crear_diorama() -> Escena {
     let mut tree_positions: Vec<(f64, f64)> = Vec::new();
     let mut attempts = 0;
     
-    while tree_positions.len() < 15 && attempts < 200 { // MENOS árboles para vista panorámica
+    while tree_positions.len() < 35 && attempts < 200 { // 35 árboles como original
         let x = rng.gen_range(2..(terrain_size-2)) as f64;
         let z = rng.gen_range(2..(terrain_size-2)) as f64;
         
@@ -146,8 +149,8 @@ pub fn crear_diorama() -> Escena {
     
     // Crear los árboles en las posiciones calculadas
     for (x, z) in tree_positions {
-        let tree_height = rng.gen_range(4..7) as f64; // Árboles más grandes para zoom
-        let leaf_layers = rng.gen_range(2..4); // Copas más grandes para zoom
+        let tree_height = rng.gen_range(3..6) as f64; // Alturas como original
+        let leaf_layers = rng.gen_range(3..5); // Capas como original
         
         // Calcular altura del terreno para este árbol
         let terrain_height = ((x * 0.2).sin() + (z * 0.2).cos()) * 2.5
@@ -165,7 +168,7 @@ pub fn crear_diorama() -> Escena {
         
         // Copa del árbol con mejor forma
         for y in 0..leaf_layers {
-            let size = (leaf_layers - y) as f64 * 0.8 + 1.5; // Copas más grandes para zoom
+            let size = (leaf_layers - y) as f64 * 0.8 + 1.5; // Tamaño original
             let layer_y = terrain_height + tree_height + y as f64 * 0.8;
             
             // Decidir tipo de hoja aleatoriamente
