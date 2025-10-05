@@ -1,0 +1,21 @@
+# Rust
+/target/
+Cargo.lock
+
+# Imágenes generadas (opcional - puedes comentar estas líneas si quieres versionar las imágenes)
+*.png
+*.gif
+
+# Archivos temporales de Windows
+Thumbs.db
+desktop.ini
+
+# Archivos de VS Code
+.vscode/
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Logs
+*.log
