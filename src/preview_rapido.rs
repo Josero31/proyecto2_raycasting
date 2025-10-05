@@ -6,6 +6,7 @@ mod materiales;
 mod camara;
 mod iluminacion;
 mod escena;
+mod texturas;
 
 use geometria::*;
 use materiales::*;
@@ -28,22 +29,22 @@ fn main() {
     }
     
     // Crear una versión simplificada de la escena
-    let escena = crear_diorama_simplificado();
+    let escena = crear_diorama();
     
-    // Configurar cámara orbital como el proyecto original (preview)
-    let terrain_size = 50.0; // Mismo tamaño que original
-    let camera_angle = 45.0f64.to_radians(); // Ángulo orbital
-    let camera_distance = 70.0;
-    let camera_height = 45.0;
+    // Configurar cámara para ver TODOS los elementos
+    let terrain_size = 20.0;  // Mismo tamaño que el terreno
+    let camera_distance = 35.0;  // Más cerca para ver todo
+    let camera_height = 25.0;     // Altura perfecta para vista isométrica
+    let camera_angle = 45.0f64.to_radians(); // Ángulo isométrico
     
     let camera_x = terrain_size/2.0 + camera_distance * camera_angle.cos();
     let camera_z = terrain_size/2.0 + camera_distance * camera_angle.sin();
     
     let camara = Camara::nueva(
-        Point3::new(camera_x, camera_height, camera_z),   // Posición orbital
-        Point3::new(terrain_size/2.0, 0.0, terrain_size/2.0), // Mirando al centro
+        Point3::new(camera_x, camera_height, camera_z),   // Posición optimizada
+        Point3::new(terrain_size/2.0, 3.0, terrain_size/2.0), // Mirando al centro exacto
         Vector3::new(0.0, 1.0, 0.0),                     // arriba
-        45.0,                                             // Campo de visión como original
+        50.0,                                             // Campo de visión más amplio para ver todo
         ANCHO as f64 / ALTO as f64                        // aspecto
     );
     
@@ -259,12 +260,12 @@ fn calcular_color(rayo: &Rayo, escena: &Escena, profundidad: u32) -> Vector3<f64
         
         color
     } else {
-        // Cielo del atardecer
+        // Cielo azul brillante estilo Minecraft
         let direccion_normalizada = rayo.direccion.normalize();
         let t = 0.5 * (direccion_normalizada.y + 1.0);
         
-        let color_superior = Vector3::new(1.0, 0.51, 0.27);
-        let color_inferior = Vector3::new(1.0, 0.75, 0.51);
+        let color_superior = Vector3::new(0.4, 0.7, 1.0);    // Azul cielo brillante
+        let color_inferior = Vector3::new(0.7, 0.9, 1.0);    // Azul muy claro cerca del horizonte
         
         color_inferior * (1.0 - t) + color_superior * t
     }

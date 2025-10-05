@@ -8,6 +8,7 @@ pub struct Material {
     pub indice_refraccion: f64,        // Índice de refracción para la transparencia
     pub rugosidad: f64,                // Para efectos de especular
     pub brillo: f64,                   // Intensidad del brillo especular
+    pub textura_nombre: Option<String>, // Nombre de la textura a usar
 }
 
 impl Material {
@@ -20,6 +21,21 @@ impl Material {
             indice_refraccion,
             rugosidad,
             brillo,
+            textura_nombre: None,
+        }
+    }
+    
+    pub fn con_textura(albedo: Vector3<f64>, reflectividad: f64, transparencia: f64, 
+                       indice_refraccion: f64, rugosidad: f64, brillo: f64, 
+                       textura: String) -> Self {
+        Self {
+            albedo,
+            reflectividad,
+            transparencia,
+            indice_refraccion,
+            rugosidad,
+            brillo,
+            textura_nombre: Some(textura),
         }
     }
     
@@ -266,6 +282,35 @@ impl Material {
         Self::nuevo(
             Vector3::new(0.7, 0.2, 1.0),  // Púrpura brillante
             0.0, 0.0, 1.0, 0.1, 0.0
+        )
+    }
+    
+    // === MATERIALES CON TEXTURAS MINECRAFT ===
+    
+    /// Pasto con textura de Minecraft
+    pub fn pasto_texturizado() -> Self {
+        Self::con_textura(
+            Vector3::new(1.0, 1.0, 1.0),  // Blanco para no alterar la textura
+            0.0, 0.0, 1.0, 0.9, 0.1,
+            "pasto".to_string()
+        )
+    }
+    
+    /// Agua con textura de Minecraft
+    pub fn agua_texturizada() -> Self {
+        Self::con_textura(
+            Vector3::new(1.0, 1.0, 1.0),  // Blanco para no alterar la textura
+            0.3, 0.1, 1.1, 0.0, 0.8,
+            "agua".to_string()
+        )
+    }
+    
+    /// Tierra/montañas con textura de Minecraft
+    pub fn dirt_texturizado() -> Self {
+        Self::con_textura(
+            Vector3::new(1.0, 1.0, 1.0),  // Blanco para no alterar la textura
+            0.05, 0.0, 1.0, 0.9, 0.1,
+            "dirt".to_string()
         )
     }
 }
