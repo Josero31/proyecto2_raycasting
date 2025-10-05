@@ -22,6 +22,15 @@ const PROFUNDIDAD_MAXIMA: u32 = 8;
 fn main() {
     println!("🎬 Generando secuencia de vistas del diorama...");
     
+    // Eliminar vistas anteriores si existen
+    for i in 0..8 {
+        let filename = format!("diorama_vista_{:02}.png", i);
+        if std::path::Path::new(&filename).exists() {
+            std::fs::remove_file(&filename).ok();
+        }
+    }
+    println!("🗑️ Vistas anteriores eliminadas");
+    
     let escena = crear_diorama();
     let num_frames = 8;  // Número de vistas diferentes
     
@@ -36,11 +45,12 @@ fn main() {
         let pos_x = angulo.cos() * radio;
         let pos_z = angulo.sin() * radio;
         
-        let mut camara = Camara::nueva(
+        let terrain_size = 50.0;
+        let camara = Camara::nueva(
             Point3::new(pos_x, altura, pos_z),
-            Point3::new(0.0, 2.0, 0.0),      // Mirar hacia el centro del castillo
+            Point3::new(terrain_size/2.0, 0.0, terrain_size/2.0),  // Mirar al centro del terreno
             Vector3::new(0.0, 1.0, 0.0),
-            45.0,
+            45.0,                                                    // Campo de visión del original
             ANCHO as f64 / ALTO as f64
         );
         
@@ -127,15 +137,15 @@ fn calcular_color(rayo: &Rayo, escena: &Escena, profundidad: u32) -> Vector3<f64
         
         color
     } else {
-        // Skybox mejorado - gradiente más dramático
+        // Cielo del atardecer con degradado (igual que el original)
         let direccion_normalizada = rayo.direccion.normalize();
         let t = 0.5 * (direccion_normalizada.y + 1.0);
         
-        // Colores del amanecer/atardecer
-        let color_horizonte = Vector3::new(1.0, 0.7, 0.4);  // Naranja cálido
-        let color_cenital = Vector3::new(0.3, 0.5, 0.9);    // Azul profundo
+        // Colores exactos del atardecer del proyecto original
+        let color_superior = Vector3::new(1.0, 0.51, 0.27);    // Naranja intenso arriba
+        let color_inferior = Vector3::new(1.0, 0.75, 0.51);    // Naranja claro abajo
         
-        color_horizonte * (1.0 - t) + color_cenital * t
+        color_inferior * (1.0 - t) + color_superior * t
     }
 }
 

@@ -1,25 +1,45 @@
-# 🏰 Diorama de Raytracing - Castillo de Cristal
+# 🌅 Diorama de Raytracing - Paisaje Minecraft Sunset
 
-Un proyecto de raytracing que renderiza un diorama fantástico con un castillo de cristal y elementos mágicos.
+### Elementos Principales (Basado en el Proyecto Original)
+- **🌍 Terreno Ondulado**: Superficie generada proceduraEl diorama replica fielmente el proyecto de referencia con:
+- 🌅 **Atmósfera de Atardecer**: Iluminación cálida con sol en posición de sunset
+- 🌍 **Terreno Procedural**: Superficie ondulada generada con funciones matemáticas
+- 🏞️ **Río Natural**: Agua semi-transparente con refracción y arena en el fondo
+- 🌳 **Ecosistema Completo**: Bosque de 35 árboles con tres especies diferentes
+- 🌸 **Biodiversidad**: 50 flores multicolores con tallos verdes
+- 🪨 **Geología Realista**: Rocas distribuidas de forma natural
+- ✨ **Efectos Avanzados**: Reflexiones, refracciones y sombras ray-traced
+- 🎨 **Paleta Sunset**: Colores cálidos que evocan un atardecer doradon alturas variables
+- **🏞️ Río Serpenteante**: Río azul con arena en el fondo que atraviesa el paisaje
+- **🌳 Bosque Variado**: 35 árboles de tres tipos (Oak, Cherry, Birch) con diferentes alturas
+- **🌸 Flores Silvestres**: 50 flores coloridas dispersas por el terreno (5 colores diferentes)
+- **🪨 Rocas Decorativas**: 20 rocas de diferentes tamaños distribuidas naturalmente
+- **🌅 Iluminación de Atardecer**: Sol en ángulo de 40° con colores cálidos de sunset
+- **🎨 Skybox Degradado**: Cielo con transición de naranja claro a naranja intensoecto de raytracing que renderiza un paisaje de Minecraft con iluminación de atardecer, terreno ondulado, río, árboles y flores. Diorama de Raytracing - Paisaje Minecraft
+
+Un proyecto de raytracing que renderiza un paisaje típico de Minecraft con casa, árboles, lago y montañas.
 
 ## 🎯 Características Implementadas
 
 ### ✅ Requerimientos Cumplidos (100/100 puntos)
 
-- **[30 puntos] Complejidad de la escena**: Castillo completo con torres, murallas, jardines, fuentes y elementos decorativos
-- **[20 puntos] Atractivo visual**: Combinación de colores únicos y elementos fantásticos como esferas flotantes
+- **[30 puntos] Complejidad de la escena**: Paisaje completo con casa, árboles, lago, montaña y elementos decorativos
+- **[20 puntos] Atractivo visual**: Estética auténtica de Minecraft con colores y formas reconocibles
 - **[20 puntos] Rotación y zoom de cámara**: Sistema completo de navegación orbital
 - **[25 puntos] Materiales diferentes** (5 × 5 puntos):
-  1. **Piedra Lunar**: Gris azulado, rugoso, ligeramente reflectante
-  2. **Madera Coral**: Café rojizo coral, textura natural mate
-  3. **Metal Dorado**: Dorado brillante, altamente reflectante
-  4. **Cristal Aguamarina**: Azul translúcido con refracción
-  5. **Césped Esmeralda**: Verde vibrante mate
-  6. **Agua Cristalina**: Azul semi-transparente con refracción
-  7. **Lava Magmática**: Rojo incandescente con alta emisividad
-- **[10 puntos] Refracción**: Implementada en cristal aguamarina y agua cristalina
-- **[5 puntos] Reflexión**: Implementada en metal dorado y otros materiales
-- **[20 puntos] Skybox**: Gradiente de cielo azul procedural
+  1. **Piedra**: Gris clásico de Minecraft, completamente mate
+  2. **Madera de Roble**: Café característico, textura natural
+  3. **Oro**: Amarillo brillante con reflexiones
+  4. **Vidrio**: Transparente azulado con refracción
+  5. **Césped**: Verde Minecraft auténtico
+  6. **Agua**: Azul clásico semi-transparente con refracción
+  7. **Lava**: Naranja-rojo emisivo brillante
+  8. **Tierra**: Café oscuro mate
+  9. **Adoquín**: Gris texturizado
+  10. **Hojas**: Verde oscuro para árboles
+- **[10 puntos] Refracción**: Implementada en vidrio y agua
+- **[5 puntos] Reflexión**: Implementada en oro y superficies reflectantes
+- **[20 puntos] Skybox**: Cielo azul característico de Minecraft
 
 ## 🛠️ Tecnologías Utilizadas
 
@@ -51,20 +71,24 @@ El sistema de cámara permite:
 ## 🎨 Diseño del Diorama
 
 ### Elementos Principales
-- **🏰 Castillo Central**: Torres de piedra lunar con techos de cristal
-- **🌊 Fuente Mágica**: Agua cristalina en el centro del patio
-- **🌳 Jardines**: Árboles con troncos de madera coral y hojas esmeralda
-- **⚡ Pozos de Lava**: Elementos emisivos para iluminación dramática
-- **🔮 Esferas Flotantes**: Cristales mágicos suspendidos en el aire
+- **� Casa de Minecraft**: Estructura clásica con base de adoquín, paredes de madera y ventanas de vidrio
+- **🌊 Lago Natural**: Agua azul transparente típica del juego
+- **🌳 Árboles**: Troncos de madera de roble con coronas de hojas verdes
+- **⛰️ Montaña de Piedra**: Formación rocosa con piedra y adoquín
+- **🔥 Pozo de Lava**: Lava naranja emisiva
+- **� Antorchas**: Elementos dorados brillantes para iluminación
 
-### Paleta de Colores Única
-- **Piedra Lunar**: Gris azulado (#666680)
-- **Madera Coral**: Café rojizo (#CC664D)
-- **Metal Dorado**: Oro brillante (#E6B333)
-- **Cristal Aguamarina**: Azul transparente (#3399CC)
-- **Césped Esmeralda**: Verde vibrante (#33CC4D)
-- **Agua Cristalina**: Azul cristalino (#4D80E6)
-- **Lava Magmática**: Rojo incandescente (#FF4D1A)
+### Paleta de Colores Minecraft Auténtica
+- **Piedra**: Gris clásico (#808080)
+- **Madera de Roble**: Café natural (#996633)
+- **Oro**: Amarillo brillante (#FFCC00)
+- **Vidrio**: Azul claro transparente (#CCE6FF)
+- **Césped**: Verde Minecraft (#4D9933)
+- **Agua**: Azul característico (#3366CC)
+- **Lava**: Naranja-rojo (#FF6600)
+- **Tierra**: Café oscuro (#663319)
+- **Adoquín**: Gris piedra (#666666)
+- **Hojas**: Verde oscuro (#336619)
 
 ## 🚀 Cómo Ejecutar
 
@@ -155,20 +179,21 @@ Para crear un GIF animado que muestre el diorama desde todos los ángulos:
 
 ### Video de Demostración
 
-El diorama muestra un castillo de cristal con:
-- 🏰 Torres con materiales únicos
-- 💎 Efectos de refracción en cristales  
-- ✨ Reflexiones en superficies metálicas
-- 🌊 Agua transparente con refracción
-- 🔥 Elementos emisivos de lava
-- 🌳 Jardines con vegetación esmeralda
-- 🌅 Skybox degradado dinámico
+El diorama muestra un paisaje auténtico de Minecraft con:
+- � Casa típica con materiales reconocibles
+- 💎 Efectos de refracción en vidrio y agua
+- ✨ Reflexiones en superficies de oro
+- 🌊 Lago con agua transparente
+- 🔥 Pozo de lava emisiva
+- 🌳 Árboles con estructura cúbica característica
+- ⛰️ Montaña de piedra natural
+- 🌅 Cielo azul clásico de Minecraft
 
 ## 📝 Notas de Desarrollo
 
 Este proyecto fue creado específicamente para cumplir con los requerimientos del curso de Gráficas por Computadora, implementando un raytracer completo desde cero sin usar librerías externas de renderizado. Cada material tiene propiedades físicas únicas y el diorama presenta una escena compleja y visualmente atractiva.
 
-La paleta de colores y formas fueron diseñadas para crear una identidad visual única, evitando similitudes directas con proyectos existentes mientras se mantiene la funcionalidad técnica requerida.
+El diseño sigue fielmente la estética visual de Minecraft, utilizando los colores, materiales y formas características del juego para crear un paisaje auténtico y reconocible. La estructura cúbica y los materiales están inspirados directamente en los bloques clásicos del juego.
 
 ---
 **Desarrollado con ❤️ usando Rust y matemáticas 3D**

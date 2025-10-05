@@ -23,100 +23,124 @@ impl Material {
         }
     }
     
-    // Materiales predefinidos tipo Minecraft pero con nuestros propios colores
+    // Materiales estilo Minecraft con colores reconocibles
     
-    /// Material tipo piedra - gris oscuro con textura rugosa
-    pub fn piedra_lunar() -> Self {
+    /// Bloque de piedra - gris clásico de Minecraft
+    pub fn piedra() -> Self {
         Self::nuevo(
-            Vector3::new(0.4, 0.4, 0.5),  // Gris azulado
-            0.1,                           // Ligeramente reflectante
-            0.0,                           // Opaco
-            1.0,                           // Sin refracción
-            0.8,                           // Muy rugoso
-            0.2                            // Poco brillo
-        )
-    }
-    
-    /// Material tipo madera - café cálido
-    pub fn madera_coral() -> Self {
-        Self::nuevo(
-            Vector3::new(0.8, 0.4, 0.3),  // Café rojizo coral
-            0.05,                          // Muy poco reflectante
+            Vector3::new(0.5, 0.5, 0.5),  // Gris piedra clásico
+            0.0,                           // No reflectante (mate)
             0.0,                           // Opaco
             1.0,                           // Sin refracción
             0.9,                           // Muy rugoso
-            0.1                            // Muy poco brillo
+            0.0                            // Sin brillo
         )
     }
     
-    /// Material tipo metal - dorado brillante
-    pub fn metal_dorado() -> Self {
+    /// Madera de roble - café característico
+    pub fn madera_roble() -> Self {
         Self::nuevo(
-            Vector3::new(0.9, 0.7, 0.2),  // Dorado brillante
-            0.8,                           // Muy reflectante
-            0.0,                           // Opaco
-            1.0,                           // Sin refracción
-            0.1,                           // Muy suave
-            0.9                            // Muy brillante
-        )
-    }
-    
-    /// Material tipo cristal - azul transparente
-    pub fn cristal_aguamarina() -> Self {
-        Self::nuevo(
-            Vector3::new(0.2, 0.6, 0.8),  // Azul aguamarina
-            0.2,                           // Algo reflectante
-            0.7,                           // Muy transparente
-            1.5,                           // Índice de refracción del vidrio
-            0.0,                           // Muy suave
-            0.8                            // Muy brillante
-        )
-    }
-    
-    /// Material tipo césped - verde vibrante
-    pub fn cesped_esmeralda() -> Self {
-        Self::nuevo(
-            Vector3::new(0.2, 0.8, 0.3),  // Verde esmeralda
+            Vector3::new(0.6, 0.4, 0.2),  // Café madera roble
             0.0,                           // No reflectante
             0.0,                           // Opaco
             1.0,                           // Sin refracción
-            0.7,                           // Rugoso
-            0.1                            // Poco brillo
+            0.8,                           // Rugoso
+            0.0                            // Sin brillo
         )
     }
     
-    /// Material tipo agua - azul translúcido
-    pub fn agua_cristalina() -> Self {
+    /// Bloque de oro - amarillo brillante
+    pub fn oro() -> Self {
         Self::nuevo(
-            Vector3::new(0.3, 0.5, 0.9),  // Azul cristalino
-            0.3,                           // Reflectante como el agua
-            0.6,                           // Semi-transparente
-            1.33,                          // Índice de refracción del agua
-            0.0,                           // Muy suave
+            Vector3::new(1.0, 0.8, 0.0),  // Amarillo oro intenso
+            0.6,                           // Reflectante
+            0.0,                           // Opaco
+            1.0,                           // Sin refracción
+            0.2,                           // Suave
             0.7                            // Brillante
         )
     }
     
-    /// Material tipo lava - rojo brillante con emisión
-    pub fn lava_magmatica() -> Self {
+    /// Vidrio - transparente azulado
+    pub fn vidrio() -> Self {
         Self::nuevo(
-            Vector3::new(1.0, 0.3, 0.1),  // Rojo incandescente
+            Vector3::new(0.8, 0.9, 1.0),  // Azul muy claro
             0.1,                           // Poco reflectante
-            0.0,                           // Opaco
-            1.0,                           // Sin refracción
-            0.6,                           // Rugoso
-            0.8                            // Muy brillante (simula emisión)
+            0.8,                           // Muy transparente
+            1.5,                           // Índice de refracción del vidrio
+            0.0,                           // Muy suave
+            0.9                            // Muy brillante
         )
     }
     
-    /// Material para el suelo - tierra café
-    pub fn tierra_fertil() -> Self {
+    /// Césped - verde Minecraft característico
+    pub fn cesped() -> Self {
         Self::nuevo(
-            Vector3::new(0.3, 0.2, 0.1),  // Café tierra
+            Vector3::new(0.3, 0.7, 0.2),  // Verde césped Minecraft
+            0.0,                           // No reflectante
+            0.0,                           // Opaco
+            1.0,                           // Sin refracción
+            0.8,                           // Rugoso
+            0.0                            // Sin brillo
+        )
+    }
+    
+    /// Agua - azul clásico de Minecraft
+    pub fn agua() -> Self {
+        Self::nuevo(
+            Vector3::new(0.2, 0.4, 0.8),  // Azul agua Minecraft
+            0.2,                           // Algo reflectante
+            0.7,                           // Transparente
+            1.33,                          // Índice de refracción del agua
+            0.0,                           // Suave
+            0.5                            // Algo brillante
+        )
+    }
+    
+    /// Lava - naranja-rojo intenso
+    pub fn lava() -> Self {
+        Self::nuevo(
+            Vector3::new(1.0, 0.4, 0.0),  // Naranja-rojo lava
+            0.0,                           // No reflectante
+            0.0,                           // Opaco
+            1.0,                           // Sin refracción
+            0.8,                           // Rugoso
+            1.0                            // Muy brillante (emisivo)
+        )
+    }
+    
+    /// Tierra - café oscuro
+    pub fn tierra() -> Self {
+        Self::nuevo(
+            Vector3::new(0.4, 0.3, 0.2),  // Café tierra
             0.0,                           // No reflectante
             0.0,                           // Opaco
             1.0,                           // Sin refracción
             1.0,                           // Muy rugoso
+            0.0                            // Sin brillo
+        )
+    }
+    
+    /// Adoquín - gris oscuro texturizado
+    pub fn adoquin() -> Self {
+        Self::nuevo(
+            Vector3::new(0.4, 0.4, 0.4),  // Gris adoquín
+            0.0,                           // No reflectante
+            0.0,                           // Opaco
+            1.0,                           // Sin refracción
+            0.9,                           // Muy rugoso
+            0.0                            // Sin brillo
+        )
+    }
+    
+    /// Hojas - verde más oscuro que el césped
+    pub fn hojas() -> Self {
+        Self::nuevo(
+            Vector3::new(0.2, 0.6, 0.1),  // Verde hojas más oscuro
+            0.0,                           // No reflectante
+            0.0,                           // Opaco
+            1.0,                           // Sin refracción
+            0.9,                           // Muy rugoso
             0.0                            // Sin brillo
         )
     }

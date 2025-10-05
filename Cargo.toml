@@ -15,3 +15,7 @@ path = "src/main.rs"
 [[bin]]
 name = "vistas_multiples"
 path = "src/vistas_multiples.rs"
+
+[[bin]]
+name = "preview_rapido"
+path = "src/preview_rapido.rs"

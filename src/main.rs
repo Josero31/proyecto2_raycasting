@@ -22,13 +22,20 @@ const PROFUNDIDAD_MAXIMA: u32 = 10;
 fn main() {
     println!("🎨 Iniciando renderizado del diorama...");
     
-    // Configurar la cámara
-    let mut camara = Camara::nueva(
-        Point3::new(0.0, 5.0, 15.0),  // posición
-        Point3::new(0.0, 0.0, 0.0),   // objetivo
-        Vector3::new(0.0, 1.0, 0.0),  // arriba
-        45.0,                          // campo de visión
-        ANCHO as f64 / ALTO as f64     // aspecto
+    // Eliminar imagen anterior si existe
+    if std::path::Path::new("diorama_renderizado.png").exists() {
+        std::fs::remove_file("diorama_renderizado.png").ok();
+        println!("🗑️ Imagen anterior eliminada");
+    }
+    
+    // Configurar cámara con ZOOM GRANDÍSIMO para ver detalles
+    let terrain_size = 50.0;
+    let camara = Camara::nueva(
+        Point3::new(terrain_size/2.0 + 8.0, 12.0, terrain_size/2.0 + 8.0), // MUY CERCA con zoom extremo
+        Point3::new(terrain_size/2.0, 3.0, terrain_size/2.0),               // Mirando al centro cerca
+        Vector3::new(0.0, 1.0, 0.0),                                        // arriba
+        45.0,                                                                // Campo de visión normal para zoom
+        ANCHO as f64 / ALTO as f64                                           // aspecto
     );
     
     // Crear la escena del diorama
@@ -123,10 +130,15 @@ fn calcular_color(rayo: &Rayo, escena: &Escena, profundidad: u32) -> Vector3<f64
         
         color
     } else {
-        // Skybox - gradiente azul cielo
+        // Cielo del atardecer con degradado (igual que el original)
         let direccion_normalizada = rayo.direccion.normalize();
         let t = 0.5 * (direccion_normalizada.y + 1.0);
-        Vector3::new(0.5, 0.7, 1.0) * (1.0 - t) + Vector3::new(0.2, 0.4, 0.8) * t
+        
+        // Colores exactos del atardecer del proyecto original
+        let color_superior = Vector3::new(1.0, 0.51, 0.27);    // Naranja intenso arriba
+        let color_inferior = Vector3::new(1.0, 0.75, 0.51);    // Naranja claro abajo
+        
+        color_inferior * (1.0 - t) + color_superior * t
     }
 }
 

@@ -43,31 +43,42 @@ impl Luz {
 
 // Configuración de iluminación para nuestro diorama
 pub fn crear_iluminacion_diorama() -> Vec<Luz> {
+    crear_iluminacion_minecraft()
+}
+
+// Iluminación estilo atardecer como el proyecto original
+pub fn crear_iluminacion_minecraft() -> Vec<Luz> {
+    // Replicar la iluminación de sunset del original
+    
+    // Sol en ángulo de 40 grados (sunset) como el original
+    let sun_angle = 40.0f64.to_radians();
+    let sun_azimuth = 220.0f64.to_radians(); // Dirección suroeste
+    
+    // Posición del sol (igual que el original)
+    let light_pos = Point3::new(
+        25.0 + 80.0 * sun_azimuth.cos() * sun_angle.cos(),
+        80.0 * sun_angle.sin(),
+        25.0 + 80.0 * sun_azimuth.sin() * sun_angle.cos(),
+    );
+    
     vec![
-        // Luz principal - sol artificial
-        Luz::direccional(
-            Vector3::new(-0.5, -1.0, -0.3).normalize(),
-            Vector3::new(1.0, 0.95, 0.8),  // Luz cálida del sol
-            0.8
+        // Sol principal de atardecer (igual colores que el original)
+        Luz::puntual(
+            light_pos,
+            Vector3::new(1.0, 0.65, 0.35),  // Colores cálidos de sunset
+            1.2
         ),
         
-        // Luz de relleno - azul suave
-        Luz::puntual(
-            Point3::new(5.0, 8.0, 10.0),
-            Vector3::new(0.6, 0.7, 1.0),   // Azul cielo
+        // Luz ambiental de atardecer
+        Luz::ambiental(
+            Vector3::new(1.0, 0.7, 0.4),    // Ambiente cálido
             0.4
         ),
         
-        // Luz ambiental - muy suave
-        Luz::ambiental(
-            Vector3::new(0.8, 0.9, 1.0),   // Azul muy claro
-            0.1
-        ),
-        
-        // Luz de acento - naranja cálida
+        // Luz de relleno para suavizar sombras
         Luz::puntual(
-            Point3::new(-3.0, 4.0, 8.0),
-            Vector3::new(1.0, 0.6, 0.2),   // Naranja cálido
+            Point3::new(0.0, 60.0, 0.0),
+            Vector3::new(0.8, 0.6, 0.4),    // Luz cenital suave
             0.3
         ),
     ]
