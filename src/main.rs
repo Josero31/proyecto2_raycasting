@@ -15,10 +15,10 @@ use camara::*;
 use escena::*;
 use texturas::*;
 
-const ANCHO: u32 = 800;
-const ALTO: u32 = 600;
-const MUESTRAS_ANTIALIASING: u32 = 4;  // Optimizado: 4x más rápido
-const PROFUNDIDAD_MAXIMA: u32 = 5;    // Optimizado: 2x más rápido
+const ANCHO: u32 = 600;  // Resolución reducida para velocidad
+const ALTO: u32 = 450;   // Mantiene aspecto 4:3
+const MUESTRAS_ANTIALIASING: u32 = 2;  // Ultra-optimizado: 2x más rápido
+const PROFUNDIDAD_MAXIMA: u32 = 3;    // Ultra-optimizado: mucho más rápido
 
 fn main() {
     println!("🎨 Iniciando renderizado del diorama...");
@@ -42,37 +42,38 @@ fn main() {
         println!("🗑️ Imagen anterior eliminada");
     }
     
-    // Configurar cámara para ver TODOS los elementos
-    let terrain_size = 20.0;  // Mismo tamaño que el terreno
-    let camera_distance = 35.0;  // Más cerca para ver todo
-    let camera_height = 25.0;     // Altura perfecta para vista isométrica
-    let camera_angle = 45.0f64.to_radians(); // Ángulo isométrico
+    // Configurar cámara PANORÁMICA para mostrar todo el paisaje
+    let camera_distance = 80.0;   // Muy alejada para mostrar paisaje completo
+    let camera_height = 50.0;     // Altura elevada para vista aérea
+    let camera_angle = 35.0f64.to_radians(); // Ángulo para ver más paisaje
     
-    let camera_x = terrain_size/2.0 + camera_distance * camera_angle.cos();
-    let camera_z = terrain_size/2.0 + camera_distance * camera_angle.sin();
+    let camera_x = camera_distance * camera_angle.cos();
+    let camera_z = camera_distance * camera_angle.sin();
     
     let camara = Camara::nueva(
-        Point3::new(camera_x, camera_height, camera_z),   // Posición optimizada
-        Point3::new(terrain_size/2.0, 3.0, terrain_size/2.0), // Mirando al centro exacto
+        Point3::new(camera_x, camera_height, camera_z),   // Posición panorámica lejana
+        Point3::new(0.0, 5.0, 0.0),                      // Mirando un poco arriba del centro
         Vector3::new(0.0, 1.0, 0.0),                     // arriba
-        50.0,                                             // Campo de visión más amplio para ver todo
+        60.0,                                             // Campo de visión amplio para panorámica
         ANCHO as f64 / ALTO as f64                        // aspecto
     );
     
-    // Crear la escena del diorama y envolver en Arc para paralelización
-    let escena = Arc::new(crear_diorama());
+    // Crear la escena que SÍ existe
+    let escena = Arc::new(crear_escena_minecraft_simple());
     let camara = Arc::new(camara);
+    let gestor_texturas = Arc::new(_gestor_texturas);
     
     // Crear imagen para el renderizado
     let mut imagen = RgbImage::new(ANCHO, ALTO);
     
-    // Renderizado paralelo OPTIMIZADO por líneas
+    // Renderizado paralelo ULTRA-OPTIMIZADO por chunks grandes
     let pixels: Vec<_> = (0..ALTO).into_par_iter().flat_map(|y| {
         let escena_ref = Arc::clone(&escena);
         let camara_ref = Arc::clone(&camara);
+        let gestor_texturas_ref = Arc::clone(&gestor_texturas);
         
-        if y % 25 == 0 {
-            println!("Procesando línea {} de {} (PARALELO)", y, ALTO);
+        if y % 50 == 0 {
+            println!("Procesando línea {} de {} (ULTRA-RÁPIDO)", y, ALTO);
         }
         
         (0..ANCHO).into_par_iter().map(move |x| {
@@ -84,7 +85,7 @@ fn main() {
                 let v = (y as f64 + rand::random::<f64>()) / ALTO as f64;
                 
                 let rayo = camara_ref.obtener_rayo(u, v);
-                color += calcular_color(&rayo, &escena_ref, PROFUNDIDAD_MAXIMA);
+                color += calcular_color(&rayo, &escena_ref, &gestor_texturas_ref, PROFUNDIDAD_MAXIMA);
             }
             
             // Promedio y corrección gamma
@@ -115,7 +116,7 @@ fn main() {
     println!("🎉 Renderizado completado!");
 }
 
-fn calcular_color(rayo: &Rayo, escena: &Escena, profundidad: u32) -> Vector3<f64> {
+fn calcular_color(rayo: &Rayo, escena: &Escena, gestor_texturas: &GestorTexturas, profundidad: u32) -> Vector3<f64> {
     if profundidad == 0 {
         return Vector3::new(0.0, 0.0, 0.0);
     }
@@ -125,28 +126,37 @@ fn calcular_color(rayo: &Rayo, escena: &Escena, profundidad: u32) -> Vector3<f64
         let punto = interseccion.punto;
         let normal = interseccion.normal;
         
-        // Color del material
-        let mut color = material.albedo;
+        // Color del material OPTIMIZADO - menos cálculos
+        let mut color = if let Some(ref textura_nombre) = material.textura_nombre {
+            if let Some(textura) = gestor_texturas.obtener_textura(textura_nombre) {
+                // UV simplificado para velocidad
+                let u = (punto.x * 0.05).fract().abs(); 
+                let v = (punto.z * 0.05).fract().abs(); 
+                
+                // Usar más albedo para colores verdes brillantes
+                let color_textura = textura.sample(u, v);
+                color_textura * 0.3 + material.albedo * 0.7
+            } else {
+                material.albedo
+            }
+        } else {
+            material.albedo
+        };
         
-        // Aplicar iluminación
-        for luz in &escena.luces {
+        // Aplicar iluminación OPTIMIZADA (solo luz principal)
+        if let Some(luz) = escena.luces.first() {
             let direccion_luz = (luz.posicion - punto).normalize();
             let intensidad = normal.dot(&direccion_luz).max(0.0);
             
-            // Verificar sombras
-            let rayo_sombra = Rayo::new(punto + normal * 0.001, direccion_luz);
-            let distancia_luz = (luz.posicion - punto).magnitude();
-            
-            if !escena.hay_obstruccion(&rayo_sombra, distancia_luz) {
-                color += luz.intensidad * intensidad;
-            }
+            // Sin verificación de sombras para máxima velocidad
+            color += luz.intensidad * intensidad * 0.5; // Reducir intensidad para compensar
         }
         
         // Reflexión
         if material.reflectividad > 0.0 {
             let direccion_reflejada = reflejar(&rayo.direccion, &normal);
             let rayo_reflejado = Rayo::new(punto + normal * 0.001, direccion_reflejada);
-            let color_reflejado = calcular_color(&rayo_reflejado, escena, profundidad - 1);
+            let color_reflejado = calcular_color(&rayo_reflejado, escena, gestor_texturas, profundidad - 1);
             color = color * (1.0 - material.reflectividad) + color_reflejado * material.reflectividad;
         }
         
@@ -154,7 +164,7 @@ fn calcular_color(rayo: &Rayo, escena: &Escena, profundidad: u32) -> Vector3<f64
         if material.transparencia > 0.0 {
             if let Some(direccion_refractada) = refractar(&rayo.direccion, &normal, material.indice_refraccion) {
                 let rayo_refractado = Rayo::new(punto - normal * 0.001, direccion_refractada);
-                let color_refractado = calcular_color(&rayo_refractado, escena, profundidad - 1);
+                let color_refractado = calcular_color(&rayo_refractado, escena, gestor_texturas, profundidad - 1);
                 color = color * (1.0 - material.transparencia) + color_refractado * material.transparencia;
             }
         }

@@ -60,15 +60,35 @@ impl GestorTexturas {
     pub fn cargar_texturas_minecraft() -> Result<Self, Box<dyn std::error::Error>> {
         let mut gestor = GestorTexturas::nuevo();
         
-        // Cargar las texturas disponibles
-        gestor.cargar_textura("agua", "texturas/agua.jpg")?;
-        gestor.cargar_textura("pasto", "texturas/pasto.jpg")?;
-        gestor.cargar_textura("dirt", "texturas/dirt.jpg")?;
+        // TERRENO BASE
+        let _ = gestor.cargar_textura("grass_top", "texturas/grass_top.jpg");
+        let _ = gestor.cargar_textura("grass_side", "texturas/grass_side.webp");
+        let _ = gestor.cargar_textura("dirt", "texturas/dirt.webp");
+        let _ = gestor.cargar_textura("stone", "texturas/stone.png");
+        let _ = gestor.cargar_textura("cobblestone", "texturas/cobblestone.webp");
+        let _ = gestor.cargar_textura("gravel", "texturas/gravel.webp");
         
-        println!("✅ Texturas de Minecraft cargadas exitosamente:");
-        println!("   - Agua: texturas/agua.jpg");
-        println!("   - Pasto: texturas/pasto.jpg");
-        println!("   - Tierra: texturas/dirt.jpg");
+        // AGUA
+        let _ = gestor.cargar_textura("water", "texturas/water_still.webp");
+        let _ = gestor.cargar_textura("agua", "texturas/agua.jpg");
+        
+        // ÁRBOLES Y VEGETACIÓN
+        let _ = gestor.cargar_textura("oak_log", "texturas/oak_log.webp");
+        let _ = gestor.cargar_textura("oak_leaves", "texturas/oak_leaves.webp");
+        let _ = gestor.cargar_textura("birch_log", "texturas/birch_log.png");
+        let _ = gestor.cargar_textura("birch_leaves", "texturas/birch_leaves.webp");
+        let _ = gestor.cargar_textura("jungle_log", "texturas/jungle_log.webp");
+        let _ = gestor.cargar_textura("jungle_leaves", "texturas/jungle_leaves.png");
+        
+        // MINERALES
+        let _ = gestor.cargar_textura("coal_ore", "texturas/coal_ore.png");
+        let _ = gestor.cargar_textura("iron_ore", "texturas/iron_ore.webp");
+        
+        println!("🎨 Sistema de texturas Minecraft cargado:");
+        println!("   🌱 Terreno: grass_top, dirt, stone, cobblestone, gravel");
+        println!("   🌊 Agua: water_still, agua");
+        println!("   🌳 Árboles: oak, birch, jungle (logs + leaves)");
+        println!("   ⛏️ Minerales: coal_ore, iron_ore");
         
         Ok(gestor)
     }

@@ -308,9 +308,133 @@ impl Material {
     /// Tierra/montañas con textura de Minecraft
     pub fn dirt_texturizado() -> Self {
         Self::con_textura(
-            Vector3::new(1.0, 1.0, 1.0),  // Blanco para no alterar la textura
+            Vector3::new(0.6, 0.4, 0.2),  // Café tierra INTENSO
             0.05, 0.0, 1.0, 0.9, 0.1,
             "dirt".to_string()
+        )
+    }
+    
+    // =================== NUEVOS MATERIALES TEXTURIZADOS ===================
+    
+    /// Parte superior del pasto (grass_top)
+    pub fn grass_top_texturizado() -> Self {
+        Self::con_textura(
+            Vector3::new(0.2, 1.0, 0.3),  // Verde pasto BRILLANTE
+            0.0, 0.0, 1.0, 0.8, 0.1,
+            "grass_top".to_string()
+        )
+    }
+    
+    /// Lado del pasto (grass_side)
+    pub fn grass_side_texturizado() -> Self {
+        Self::con_textura(
+            Vector3::new(0.3, 0.9, 0.2),  // Verde pasto lateral
+            0.0, 0.0, 1.0, 0.8, 0.1,
+            "grass_side".to_string()
+        )
+    }
+    
+    /// Piedra texturizada
+    pub fn stone_texturizado() -> Self {
+        Self::con_textura(
+            Vector3::new(0.5, 0.5, 0.5),  // Gris piedra
+            0.05, 0.0, 1.0, 0.9, 0.1,
+            "stone".to_string()
+        )
+    }
+    
+    /// Adoquín texturizado
+    pub fn cobblestone_texturizado() -> Self {
+        Self::con_textura(
+            Vector3::new(0.4, 0.4, 0.4),  // Gris adoquín
+            0.1, 0.0, 1.0, 0.9, 0.1,
+            "cobblestone".to_string()
+        )
+    }
+    
+    /// Grava texturizada
+    pub fn gravel_texturizado() -> Self {
+        Self::con_textura(
+            Vector3::new(0.3, 0.3, 0.3),  // Gris grava oscuro
+            0.05, 0.0, 1.0, 0.9, 0.1,
+            "gravel".to_string()
+        )
+    }
+    
+    /// Agua quieta texturizada
+    pub fn water_texturizado() -> Self {
+        Self::con_textura(
+            Vector3::new(1.0, 1.0, 1.0),
+            0.3, 0.1, 1.1, 0.0, 0.8,
+            "water".to_string()
+        )
+    }
+    
+    // ÁRBOLES - ROBLE
+    pub fn oak_log_texturizado() -> Self {
+        Self::con_textura(
+            Vector3::new(0.5, 0.3, 0.1),  // Café tronco INTENSO
+            0.0, 0.0, 1.0, 0.8, 0.1,
+            "oak_log".to_string()
+        )
+    }
+    
+    pub fn oak_leaves_texturizado() -> Self {
+        Self::con_textura(
+            Vector3::new(0.1, 0.9, 0.2),  // Verde hojas BRILLANTE
+            0.0, 0.0, 1.0, 0.7, 0.2,
+            "oak_leaves".to_string()
+        )
+    }
+    
+    // ÁRBOLES - ABEDUL
+    pub fn birch_log_texturizado() -> Self {
+        Self::con_textura(
+            Vector3::new(0.8, 0.7, 0.5),  // Café claro abedul
+            0.1, 0.0, 1.0, 0.8, 0.1,
+            "birch_log".to_string()
+        )
+    }
+    
+    pub fn birch_leaves_texturizado() -> Self {
+        Self::con_textura(
+            Vector3::new(0.2, 0.8, 0.3),  // Verde hojas abedul
+            0.0, 0.0, 1.0, 0.7, 0.2,
+            "birch_leaves".to_string()
+        )
+    }
+    
+    // ÁRBOLES - JUNGLA
+    pub fn jungle_log_texturizado() -> Self {
+        Self::con_textura(
+            Vector3::new(0.4, 0.2, 0.1),  // Café oscuro jungla
+            0.0, 0.0, 1.0, 0.8, 0.1,
+            "jungle_log".to_string()
+        )
+    }
+    
+    pub fn jungle_leaves_texturizado() -> Self {
+        Self::con_textura(
+            Vector3::new(0.0, 0.9, 0.1),  // Verde hojas jungla INTENSO
+            0.0, 0.0, 1.0, 0.7, 0.2,
+            "jungle_leaves".to_string()
+        )
+    }
+    
+    // MINERALES
+    pub fn coal_ore_texturizado() -> Self {
+        Self::con_textura(
+            Vector3::new(1.0, 1.0, 1.0),
+            0.05, 0.0, 1.0, 0.9, 0.1,
+            "coal_ore".to_string()
+        )
+    }
+    
+    pub fn iron_ore_texturizado() -> Self {
+        Self::con_textura(
+            Vector3::new(1.0, 1.0, 1.0),
+            0.2, 0.0, 1.0, 0.8, 0.3,
+            "iron_ore".to_string()
         )
     }
 }

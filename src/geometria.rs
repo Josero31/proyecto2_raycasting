@@ -43,6 +43,16 @@ impl Cubo {
     pub fn nuevo(centro: Point3<f64>, tamano: f64, material: Material) -> Self {
         Self { centro, tamano, material }
     }
+    
+    pub fn con_limites(min: Point3<f64>, max: Point3<f64>, material: Material) -> Self {
+        let centro = Point3::new(
+            (min.x + max.x) / 2.0,
+            (min.y + max.y) / 2.0,
+            (min.z + max.z) / 2.0
+        );
+        let tamano = (max.x - min.x).max(max.y - min.y).max(max.z - min.z);
+        Self { centro, tamano, material }
+    }
 }
 
 impl Figura for Cubo {
