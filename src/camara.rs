@@ -2,6 +2,7 @@ use nalgebra::{Vector3, Point3};
 use crate::geometria::Rayo;
 use std::f64::consts::PI;
 
+#[allow(dead_code)]
 pub struct Camara {
     pub posicion: Point3<f64>,
     pub objetivo: Point3<f64>,
@@ -25,6 +26,7 @@ pub struct Camara {
 unsafe impl Send for Camara {}
 unsafe impl Sync for Camara {}
 
+#[allow(dead_code)]
 impl Camara {
     pub fn nueva(posicion: Point3<f64>, objetivo: Point3<f64>, arriba: Vector3<f64>, 
                  campo_vision: f64, aspecto: f64) -> Self {

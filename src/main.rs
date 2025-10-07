@@ -1,202 +1,294 @@
-use nalgebra::{Vector3, Point3};
-use image::{RgbImage, Rgb};
-use rayon::prelude::*;
-use std::sync::Arc;
+﻿use raylib::prelude::*;
+use rand::Rng;
 
-mod geometria;
-mod materiales;
-mod camara;
-mod iluminacion;
-mod escena;
-mod texturas;
+struct Tree {
+    x: f32,
+    z: f32,
+    height: f32,
+    leaf_layers: i32,
+    tree_type: TreeType,
+}
 
-use geometria::*;
-use camara::*;
-use escena::*;
-use texturas::*;
+#[derive(Clone, Copy)]
+enum TreeType {
+    Oak,
+    Cherry,
+    Birch,
+}
 
-const ANCHO: u32 = 600;  // Resolución reducida para velocidad
-const ALTO: u32 = 450;   // Mantiene aspecto 4:3
-const MUESTRAS_ANTIALIASING: u32 = 2;  // Ultra-optimizado: 2x más rápido
-const PROFUNDIDAD_MAXIMA: u32 = 3;    // Ultra-optimizado: mucho más rápido
+struct Rock {
+    x: f32,
+    z: f32,
+    size: f32,
+}
+
+struct Flower {
+    x: f32,
+    z: f32,
+    color: Color,
+}
+
+fn is_in_shadow(x: f32, y: f32, z: f32, trees: &Vec<Tree>, rocks: &Vec<Rock>, light_dir: Vector3) -> bool {
+    let shadow_steps = 15;
+    let step_size = 0.6;
+    
+    for i in 1..shadow_steps {
+        let test_pos = Vector3::new(
+            x - light_dir.x * i as f32 * step_size,
+            y - light_dir.y * i as f32 * step_size,
+            z - light_dir.z * i as f32 * step_size,
+        );
+        
+        for tree in trees {
+            let dx = test_pos.x - tree.x;
+            let dz = test_pos.z - tree.z;
+            let dist = (dx * dx + dz * dz).sqrt();
+            
+            if dist < 0.5 && test_pos.y >= 0.0 && test_pos.y <= tree.height {
+                return true;
+            }
+            
+            for layer in 0..tree.leaf_layers {
+                let layer_y = tree.height + layer as f32 * 0.8;
+                let size = (tree.leaf_layers - layer) as f32 * 0.8 + 1.5;
+                if dist < size / 2.0 && (test_pos.y - layer_y).abs() < 0.6 {
+                    return true;
+                }
+            }
+        }
+        
+        for rock in rocks {
+            let dx = test_pos.x - rock.x;
+            let dz = test_pos.z - rock.z;
+            let dist = (dx * dx + dz * dz).sqrt();
+            
+            let rock_height = ((rock.x * 0.3).sin() + (rock.z * 0.3).cos()) * 2.5
+                + ((rock.x * 0.5).sin() * (rock.z * 0.5).cos()) * 1.5
+                + 2.0;
+            
+            if dist < rock.size / 2.0 && (test_pos.y - rock_height).abs() < rock.size {
+                return true;
+            }
+        }
+        
+        if test_pos.y > 60.0 {
+            break;
+        }
+    }
+    
+    false
+}
+
+fn apply_shadow(base_color: Color, in_shadow: bool) -> Color {
+    if in_shadow {
+        Color::new(
+            (base_color.r as f32 * 0.5) as u8,
+            (base_color.g as f32 * 0.5) as u8,
+            (base_color.b as f32 * 0.5) as u8,
+            base_color.a,
+        )
+    } else {
+        base_color
+    }
+}
 
 fn main() {
-    println!("🎨 Iniciando renderizado del diorama...");
+    println!("Iniciando Diorama Minecraft...");
     
-    // Cargar texturas de Minecraft
-    let _gestor_texturas = match GestorTexturas::cargar_texturas_minecraft() {
-        Ok(gestor) => {
-            println!("🖼️ Texturas cargadas exitosamente!");
-            gestor
-        },
-        Err(e) => {
-            println!("⚠️ Error cargando texturas: {}", e);
-            println!("🔄 Continuando con colores sólidos...");
-            GestorTexturas::nuevo()
-        }
-    };
+    let (mut rl, thread) = raylib::init()
+        .size(1400, 900)
+        .title("Diorama Minecraft - Paisaje al Atardecer")
+        .build();
     
-    // Eliminar imagen anterior si existe
-    if std::path::Path::new("diorama_renderizado.png").exists() {
-        std::fs::remove_file("diorama_renderizado.png").ok();
-        println!("🗑️ Imagen anterior eliminada");
-    }
+    rl.set_target_fps(60);
     
-    // Configurar cámara PANORÁMICA para mostrar todo el paisaje
-    let camera_distance = 80.0;   // Muy alejada para mostrar paisaje completo
-    let camera_height = 50.0;     // Altura elevada para vista aérea
-    let camera_angle = 35.0f64.to_radians(); // Ángulo para ver más paisaje
-    
-    let camera_x = camera_distance * camera_angle.cos();
-    let camera_z = camera_distance * camera_angle.sin();
-    
-    let camara = Camara::nueva(
-        Point3::new(camera_x, camera_height, camera_z),   // Posición panorámica lejana
-        Point3::new(0.0, 5.0, 0.0),                      // Mirando un poco arriba del centro
-        Vector3::new(0.0, 1.0, 0.0),                     // arriba
-        60.0,                                             // Campo de visión amplio para panorámica
-        ANCHO as f64 / ALTO as f64                        // aspecto
+    let mut camera = Camera3D::perspective(
+        Vector3::new(30.0, 30.0, 50.0),
+        Vector3::new(0.0, 0.0, 0.0),
+        Vector3::new(0.0, 1.0, 0.0),
+        45.0,
     );
     
-    // Crear la escena que SÍ existe
-    let escena = Arc::new(crear_escena_minecraft_simple());
-    let camara = Arc::new(camara);
-    let gestor_texturas = Arc::new(_gestor_texturas);
+    let mut rng = rand::thread_rng();
+    let mut trees: Vec<Tree> = Vec::new();
     
-    // Crear imagen para el renderizado
-    let mut imagen = RgbImage::new(ANCHO, ALTO);
-    
-    // Renderizado paralelo ULTRA-OPTIMIZADO por chunks grandes
-    let pixels: Vec<_> = (0..ALTO).into_par_iter().flat_map(|y| {
-        let escena_ref = Arc::clone(&escena);
-        let camara_ref = Arc::clone(&camara);
-        let gestor_texturas_ref = Arc::clone(&gestor_texturas);
-        
-        if y % 50 == 0 {
-            println!("Procesando línea {} de {} (ULTRA-RÁPIDO)", y, ALTO);
-        }
-        
-        (0..ANCHO).into_par_iter().map(move |x| {
-            let mut color = Vector3::new(0.0, 0.0, 0.0);
-            
-            // Anti-aliasing OPTIMIZADO con menos muestras
-            for _ in 0..MUESTRAS_ANTIALIASING {
-                let u = (x as f64 + rand::random::<f64>()) / ANCHO as f64;
-                let v = (y as f64 + rand::random::<f64>()) / ALTO as f64;
-                
-                let rayo = camara_ref.obtener_rayo(u, v);
-                color += calcular_color(&rayo, &escena_ref, &gestor_texturas_ref, PROFUNDIDAD_MAXIMA);
-            }
-            
-            // Promedio y corrección gamma
-            color /= MUESTRAS_ANTIALIASING as f64;
-            color = Vector3::new(color.x.sqrt(), color.y.sqrt(), color.z.sqrt());
-            
-            
-            // Convertir a RGB [0, 255]
-            let r = (255.0 * color.x.clamp(0.0, 1.0)) as u8;
-            let g = (255.0 * color.y.clamp(0.0, 1.0)) as u8;
-            let b = (255.0 * color.z.clamp(0.0, 1.0)) as u8;
-            
-            (x, y, [r, g, b])
-        }).collect::<Vec<_>>()
-    }).collect();
-    
-    // Aplicar pixels a la imagen
-    for (x, y, color) in pixels {
-        imagen.put_pixel(x, ALTO - y - 1, Rgb(color));
-    }
-    
-    // Guardar la imagen
-    match imagen.save("diorama_renderizado.png") {
-        Ok(_) => println!("✅ Imagen guardada como 'diorama_renderizado.png'"),
-        Err(e) => println!("❌ Error al guardar imagen: {}", e),
-    }
-    
-    println!("🎉 Renderizado completado!");
-}
-
-fn calcular_color(rayo: &Rayo, escena: &Escena, gestor_texturas: &GestorTexturas, profundidad: u32) -> Vector3<f64> {
-    if profundidad == 0 {
-        return Vector3::new(0.0, 0.0, 0.0);
-    }
-    
-    if let Some(interseccion) = escena.intersectar(rayo) {
-        let material = &interseccion.material;
-        let punto = interseccion.punto;
-        let normal = interseccion.normal;
-        
-        // Color del material OPTIMIZADO - menos cálculos
-        let mut color = if let Some(ref textura_nombre) = material.textura_nombre {
-            if let Some(textura) = gestor_texturas.obtener_textura(textura_nombre) {
-                // UV simplificado para velocidad
-                let u = (punto.x * 0.05).fract().abs(); 
-                let v = (punto.z * 0.05).fract().abs(); 
-                
-                // Usar más albedo para colores verdes brillantes
-                let color_textura = textura.sample(u, v);
-                color_textura * 0.3 + material.albedo * 0.7
-            } else {
-                material.albedo
-            }
-        } else {
-            material.albedo
+    for _ in 0..35 {
+        let tree_type = match rng.gen_range(0..3) {
+            0 => TreeType::Oak,
+            1 => TreeType::Cherry,
+            _ => TreeType::Birch,
         };
         
-        // Aplicar iluminación OPTIMIZADA (solo luz principal)
-        if let Some(luz) = escena.luces.first() {
-            let direccion_luz = (luz.posicion - punto).normalize();
-            let intensidad = normal.dot(&direccion_luz).max(0.0);
-            
-            // Sin verificación de sombras para máxima velocidad
-            color += luz.intensidad * intensidad * 0.5; // Reducir intensidad para compensar
+        trees.push(Tree {
+            x: rng.gen_range(-25.0..25.0),
+            z: rng.gen_range(-25.0..25.0),
+            height: rng.gen_range(8.0..15.0),
+            leaf_layers: rng.gen_range(3..6),
+            tree_type,
+        });
+    }
+    
+    let mut rocks: Vec<Rock> = Vec::new();
+    for _ in 0..20 {
+        rocks.push(Rock {
+            x: rng.gen_range(-25.0..25.0),
+            z: rng.gen_range(-25.0..25.0),
+            size: rng.gen_range(2.0..5.0),
+        });
+    }
+    
+    let mut flowers: Vec<Flower> = Vec::new();
+    for _ in 0..50 {
+        flowers.push(Flower {
+            x: rng.gen_range(-25.0..25.0),
+            z: rng.gen_range(-25.0..25.0),
+            color: if rng.gen_bool(0.5) {
+                Color::new(255, 50, 50, 255)
+            } else {
+                Color::new(255, 255, 50, 255)
+            },
+        });
+    }
+    
+    let light_dir = Vector3::new(-0.5, -0.7, -0.3).normalized();
+    
+    let mut rotation_angle: f32 = 0.0;
+    let mut zoom: f32 = 50.0;
+    let mut is_dragging = false;
+    let mut last_mouse_pos = Vector2::zero();
+    
+    while !rl.window_should_close() {
+        if rl.is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT) {
+            is_dragging = true;
+            last_mouse_pos = rl.get_mouse_position();
         }
         
-        // Reflexión
-        if material.reflectividad > 0.0 {
-            let direccion_reflejada = reflejar(&rayo.direccion, &normal);
-            let rayo_reflejado = Rayo::new(punto + normal * 0.001, direccion_reflejada);
-            let color_reflejado = calcular_color(&rayo_reflejado, escena, gestor_texturas, profundidad - 1);
-            color = color * (1.0 - material.reflectividad) + color_reflejado * material.reflectividad;
+        if rl.is_mouse_button_released(MouseButton::MOUSE_BUTTON_LEFT) {
+            is_dragging = false;
         }
         
-        // Refracción (para materiales transparentes)
-        if material.transparencia > 0.0 {
-            if let Some(direccion_refractada) = refractar(&rayo.direccion, &normal, material.indice_refraccion) {
-                let rayo_refractado = Rayo::new(punto - normal * 0.001, direccion_refractada);
-                let color_refractado = calcular_color(&rayo_refractado, escena, gestor_texturas, profundidad - 1);
-                color = color * (1.0 - material.transparencia) + color_refractado * material.transparencia;
+        if is_dragging {
+            let current_mouse = rl.get_mouse_position();
+            let delta = current_mouse.x - last_mouse_pos.x;
+            rotation_angle += delta * 0.005;
+            last_mouse_pos = current_mouse;
+        }
+        
+        let wheel = rl.get_mouse_wheel_move();
+        if wheel != 0.0 {
+            zoom -= wheel * 5.0;
+            zoom = zoom.clamp(20.0, 100.0);
+        }
+        
+        camera.position = Vector3::new(
+            rotation_angle.sin() * zoom,
+            30.0,
+            rotation_angle.cos() * zoom,
+        );
+        camera.target = Vector3::new(0.0, 0.0, 0.0);
+        
+        let mut d = rl.begin_drawing(&thread);
+        d.clear_background(Color::new(135, 206, 235, 255));
+        
+        let mut d3 = d.begin_mode3D(camera);
+        
+        for x in -25..25 {
+            for z in -25..25 {
+                let fx = x as f32;
+                let fz = z as f32;
+                let height = ((fx * 0.1).sin() + (fz * 0.1).cos()) * 1.5;
+                
+                let in_shadow = is_in_shadow(fx, height, fz, &trees, &rocks, light_dir);
+                
+                let river_center = 0.0;
+                let river_width = 4.0;
+                let distance_to_river = (fz - river_center).abs();
+                
+                if distance_to_river < river_width {
+                    let water_color = Color::new(30, 144, 255, 180);
+                    let water_y = -0.5;
+                    d3.draw_cube(
+                        Vector3::new(fx, water_y, fz),
+                        2.0, 0.3, 2.0,
+                        apply_shadow(water_color, in_shadow)
+                    );
+                } else {
+                    let grass_color = if distance_to_river < river_width + 2.0 {
+                        Color::new(34, 139, 34, 255)
+                    } else {
+                        Color::new(50, 205, 50, 255)
+                    };
+                    
+                    d3.draw_cube(
+                        Vector3::new(fx, height - 1.0, fz),
+                        2.0, 2.0, 2.0,
+                        apply_shadow(grass_color, in_shadow)
+                    );
+                }
             }
         }
         
-        color
-    } else {
-        // Cielo azul brillante estilo Minecraft
-        let direccion_normalizada = rayo.direccion.normalize();
-        let t = 0.5 * (direccion_normalizada.y + 1.0);
+        for tree in &trees {
+            let trunk_color = match tree.tree_type {
+                TreeType::Oak => Color::new(139, 69, 19, 255),
+                TreeType::Cherry => Color::new(160, 82, 45, 255),
+                TreeType::Birch => Color::new(245, 245, 220, 255),
+            };
+            
+            let trunk_in_shadow = is_in_shadow(tree.x, tree.height / 2.0, tree.z, &trees, &rocks, light_dir);
+            d3.draw_cube(
+                Vector3::new(tree.x, tree.height / 2.0, tree.z),
+                1.0, tree.height, 1.0,
+                apply_shadow(trunk_color, trunk_in_shadow)
+            );
+            
+            for layer in 0..tree.leaf_layers {
+                let layer_y = tree.height + layer as f32 * 0.8;
+                let size = (tree.leaf_layers - layer) as f32 * 0.8 + 1.5;
+                
+                let leaf_color = match tree.tree_type {
+                    TreeType::Oak => Color::new(34, 139, 34, 255),
+                    TreeType::Cherry => Color::new(255, 182, 193, 255),
+                    TreeType::Birch => Color::new(144, 238, 144, 255),
+                };
+                
+                let leaf_in_shadow = is_in_shadow(tree.x, layer_y, tree.z, &trees, &rocks, light_dir);
+                d3.draw_cube(
+                    Vector3::new(tree.x, layer_y, tree.z),
+                    size, size * 0.8, size,
+                    apply_shadow(leaf_color, leaf_in_shadow)
+                );
+            }
+        }
         
-        // Cielo azul Minecraft - azul brillante arriba, más claro hacia el horizonte
-        let color_superior = Vector3::new(0.4, 0.7, 1.0);    // Azul cielo brillante
-        let color_inferior = Vector3::new(0.7, 0.9, 1.0);    // Azul muy claro cerca del horizonte
+        for rock in &rocks {
+            let rock_height = ((rock.x * 0.3).sin() + (rock.z * 0.3).cos()) * 2.5
+                + ((rock.x * 0.5).sin() * (rock.z * 0.5).cos()) * 1.5
+                + 2.0;
+            
+            let rock_in_shadow = is_in_shadow(rock.x, rock_height, rock.z, &trees, &rocks, light_dir);
+            d3.draw_cube(
+                Vector3::new(rock.x, rock_height, rock.z),
+                rock.size, rock.size * 1.2, rock.size,
+                apply_shadow(Color::new(128, 128, 128, 255), rock_in_shadow)
+            );
+        }
         
-        color_inferior * (1.0 - t) + color_superior * t
+        for flower in &flowers {
+            let flower_y = ((flower.x * 0.1).sin() + (flower.z * 0.1).cos()) * 1.5 + 0.5;
+            let flower_in_shadow = is_in_shadow(flower.x, flower_y, flower.z, &trees, &rocks, light_dir);
+            
+            d3.draw_cube(
+                Vector3::new(flower.x, flower_y, flower.z),
+                0.3, 1.0, 0.3,
+                apply_shadow(Color::new(34, 139, 34, 255), flower_in_shadow)
+            );
+            
+            d3.draw_cube(
+                Vector3::new(flower.x, flower_y + 0.5, flower.z),
+                0.5, 0.5, 0.5,
+                apply_shadow(flower.color, flower_in_shadow)
+            );
+        }
     }
-}
-
-fn reflejar(incidente: &Vector3<f64>, normal: &Vector3<f64>) -> Vector3<f64> {
-    incidente - 2.0 * incidente.dot(normal) * normal
-}
-
-fn refractar(incidente: &Vector3<f64>, normal: &Vector3<f64>, indice: f64) -> Option<Vector3<f64>> {
-    let cos_theta = (-incidente).dot(normal).min(1.0);
-    let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
-    
-    if indice * sin_theta > 1.0 {
-        return None; // Reflexión total interna
-    }
-    
-    let perpendicular = indice * (incidente + cos_theta * normal);
-    let paralelo = -(1.0 - perpendicular.magnitude_squared()).abs().sqrt() * normal;
-    
-    Some(perpendicular + paralelo)
 }

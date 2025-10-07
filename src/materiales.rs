@@ -1,16 +1,20 @@
 use nalgebra::Vector3;
 
+#[allow(dead_code)]
 #[derive(Clone)]
 pub struct Material {
     pub albedo: Vector3<f64>,          // Color base del material
     pub reflectividad: f64,            // 0.0 = mate, 1.0 = espejo perfecto
     pub transparencia: f64,            // 0.0 = opaco, 1.0 = completamente transparente
     pub indice_refraccion: f64,        // Índice de refracción para la transparencia
+    #[allow(dead_code)]
     pub rugosidad: f64,                // Para efectos de especular
+    #[allow(dead_code)]
     pub brillo: f64,                   // Intensidad del brillo especular
     pub textura_nombre: Option<String>, // Nombre de la textura a usar
 }
 
+#[allow(dead_code)]
 impl Material {
     pub fn nuevo(albedo: Vector3<f64>, reflectividad: f64, transparencia: f64, 
                  indice_refraccion: f64, rugosidad: f64, brillo: f64) -> Self {
@@ -308,8 +312,8 @@ impl Material {
     /// Tierra/montañas con textura de Minecraft
     pub fn dirt_texturizado() -> Self {
         Self::con_textura(
-            Vector3::new(0.6, 0.4, 0.2),  // Café tierra INTENSO
-            0.05, 0.0, 1.0, 0.9, 0.1,
+            Vector3::new(0.8, 0.5, 0.2),  // Café tierra MÁS BRILLANTE
+            0.0, 0.0, 1.0, 0.9, 0.05,
             "dirt".to_string()
         )
     }
@@ -319,8 +323,8 @@ impl Material {
     /// Parte superior del pasto (grass_top)
     pub fn grass_top_texturizado() -> Self {
         Self::con_textura(
-            Vector3::new(0.2, 1.0, 0.3),  // Verde pasto BRILLANTE
-            0.0, 0.0, 1.0, 0.8, 0.1,
+            Vector3::new(0.1, 0.8, 0.1),  // Verde pasto SÚPER BRILLANTE
+            0.0, 0.0, 1.0, 0.9, 0.05,
             "grass_top".to_string()
         )
     }
@@ -337,8 +341,8 @@ impl Material {
     /// Piedra texturizada
     pub fn stone_texturizado() -> Self {
         Self::con_textura(
-            Vector3::new(0.5, 0.5, 0.5),  // Gris piedra
-            0.05, 0.0, 1.0, 0.9, 0.1,
+            Vector3::new(0.7, 0.7, 0.7),  // Gris piedra MÁS CLARO
+            0.0, 0.0, 1.0, 0.9, 0.05,
             "stone".to_string()
         )
     }
@@ -364,8 +368,8 @@ impl Material {
     /// Agua quieta texturizada
     pub fn water_texturizado() -> Self {
         Self::con_textura(
-            Vector3::new(1.0, 1.0, 1.0),
-            0.3, 0.1, 1.1, 0.0, 0.8,
+            Vector3::new(0.1, 0.3, 0.8),  // Azul agua INTENSO
+            0.0, 0.0, 1.0, 0.9, 0.05,
             "water".to_string()
         )
     }
@@ -373,16 +377,16 @@ impl Material {
     // ÁRBOLES - ROBLE
     pub fn oak_log_texturizado() -> Self {
         Self::con_textura(
-            Vector3::new(0.5, 0.3, 0.1),  // Café tronco INTENSO
-            0.0, 0.0, 1.0, 0.8, 0.1,
+            Vector3::new(0.7, 0.4, 0.1),  // Café tronco MÁS BRILLANTE
+            0.0, 0.0, 1.0, 0.9, 0.05,
             "oak_log".to_string()
         )
     }
     
     pub fn oak_leaves_texturizado() -> Self {
         Self::con_textura(
-            Vector3::new(0.1, 0.9, 0.2),  // Verde hojas BRILLANTE
-            0.0, 0.0, 1.0, 0.7, 0.2,
+            Vector3::new(0.0, 0.7, 0.0),  // Verde hojas SÚPER INTENSO
+            0.0, 0.0, 1.0, 0.85, 0.1,
             "oak_leaves".to_string()
         )
     }

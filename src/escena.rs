@@ -44,6 +44,7 @@ impl Escena {
         interseccion_mas_cercana
     }
     
+    #[allow(dead_code)]
     pub fn hay_obstruccion(&self, rayo: &Rayo, distancia_maxima: f64) -> bool {
         for objeto in &self.objetos {
             if let Some(interseccion) = objeto.intersectar(rayo) {
@@ -57,6 +58,7 @@ impl Escena {
 }
 
 // Función para crear un diorama EXACTAMENTE como el proyecto original
+#[allow(dead_code)]
 pub fn crear_diorama() -> Escena {
     let mut escena = Escena::nueva();
     let mut rng = thread_rng();
@@ -179,6 +181,7 @@ pub fn crear_diorama() -> Escena {
 
 // ====================== MUNDO MINECRAFT MASIVO CON TEXTURAS ======================
 
+#[allow(dead_code)]
 pub fn crear_escena_minecraft_masiva() -> Escena {
     let mut escena = Escena::nueva();
     
@@ -402,13 +405,188 @@ pub fn crear_escena_minecraft_masiva() -> Escena {
 pub fn crear_escena_minecraft_simple() -> Escena {
     let mut escena = Escena::nueva();
     
-    println!("🌍 Generando paisaje de Minecraft REAL con bloques individuales...");
+    println!("🌍 Generando DIORAMA MINECRAFT COMPLETO...");
     
-    let size = 40; // Mundo de 40x40 bloques
+    // TERRENO NATURAL 30x30
+    let size = 30;
+    let mut alturas = vec![vec![0i32; size]; size];
+    
+    // Generar alturas con ruido natural
+    for x in 0..size {
+        for z in 0..size {
+            let fx = x as f64 * 0.1;
+            let fz = z as f64 * 0.1;
+            
+            let altura1 = (fx * 0.8).sin() * (fz * 0.6).cos() * 3.0;
+            let altura2 = (fx * 0.3).sin() * (fz * 0.4).sin() * 2.0;
+            let altura3 = (fx * 0.15).cos() * (fz * 0.2).cos() * 4.0;
+            
+            let altura_final = (altura1 + altura2 + altura3 + 5.0) as i32;
+            alturas[x][z] = altura_final.max(1).min(12);
+        }
+    }
+    
+    // COLOCAR TERRENO
+    for x in 0..size {
+        for z in 0..size {
+            let altura_max = alturas[x][z];
+            
+            for y in 0..altura_max {
+                let pos_x = x as f64 - size as f64 / 2.0;
+                let pos_z = z as f64 - size as f64 / 2.0;
+                let pos_y = y as f64;
+                
+                let material = if y == altura_max - 1 {
+                    Material::grass_top_texturizado()
+                } else if y >= altura_max - 3 {
+                    Material::dirt_texturizado()
+                } else {
+                    Material::stone_texturizado()
+                };
+                
+                let bloque = Box::new(Cubo::con_limites(
+                    Point3::new(pos_x, pos_y, pos_z),
+                    Point3::new(pos_x + 1.0, pos_y + 1.0, pos_z + 1.0),
+                    material
+                ));
+                escena.agregar_objeto(bloque);
+            }
+        }
+    }
+    
+    // ÁRBOLES
+    let posiciones_arboles = [
+        (8, 8), (20, 12), (15, 22), (25, 25), (5, 18), 
+        (22, 5), (12, 25), (18, 15), (7, 25), (25, 8)
+    ];
+    
+    for &(tree_x, tree_z) in &posiciones_arboles {
+        if tree_x < size && tree_z < size {
+            let altura_base = alturas[tree_x][tree_z];
+            let pos_x = tree_x as f64 - size as f64 / 2.0;
+            let pos_z = tree_z as f64 - size as f64 / 2.0;
+            
+            // Tronco
+            let altura_tronco = 4 + (tree_x + tree_z) % 3;
+            for y in 0..altura_tronco {
+                let tronco = Box::new(Cubo::con_limites(
+                    Point3::new(pos_x, altura_base as f64 + y as f64, pos_z),
+                    Point3::new(pos_x + 1.0, altura_base as f64 + y as f64 + 1.0, pos_z + 1.0),
+                    Material::oak_log_texturizado()
+                ));
+                escena.agregar_objeto(tronco);
+            }
+            
+            // Hojas
+            let base_hojas = altura_base as f64 + altura_tronco as f64 - 1.0;
+            for dx in -2..=2 {
+                for dz in -2..=2 {
+                    for dy in 0..3 {
+                        let distancia = (dx * dx + dz * dz) as f64;
+                        if distancia <= 4.0 && (distancia <= 2.0 || dy < 2) {
+                            let hoja = Box::new(Cubo::con_limites(
+                                Point3::new(pos_x + dx as f64, base_hojas + dy as f64, pos_z + dz as f64),
+                                Point3::new(pos_x + dx as f64 + 1.0, base_hojas + dy as f64 + 1.0, pos_z + dz as f64 + 1.0),
+                                Material::oak_leaves_texturizado()
+                            ));
+                            escena.agregar_objeto(hoja);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // LAGO
+    let centro_lago_x = size / 4;
+    let centro_lago_z = size / 4;
+    let radio_lago = 4;
+    
+    for x in centro_lago_x - radio_lago..centro_lago_x + radio_lago {
+        for z in centro_lago_z - radio_lago..centro_lago_z + radio_lago {
+            if x < size && z < size {
+                let dx = x as i32 - centro_lago_x as i32;
+                let dz = z as i32 - centro_lago_z as i32;
+                let distancia = ((dx * dx + dz * dz) as f64).sqrt();
+                
+                if distancia <= radio_lago as f64 {
+                    let pos_x = x as f64 - size as f64 / 2.0;
+                    let pos_z = z as f64 - size as f64 / 2.0;
+                    let altura_agua = (alturas[x][z] - 2).max(1);
+                    
+                    let agua = Box::new(Cubo::con_limites(
+                        Point3::new(pos_x, altura_agua as f64, pos_z),
+                        Point3::new(pos_x + 1.0, altura_agua as f64 + 1.0, pos_z + 1.0),
+                        Material::water_texturizado()
+                    ));
+                    escena.agregar_objeto(agua);
+                }
+            }
+        }
+    }
+    
+    // ESTRUCTURAS ADICIONALES
+    
+    // Casa pequeña
+    for x in 0..4 {
+        for z in 0..4 {
+            for y in 0..3 {
+                let pos_x = (x as f64) + 8.0;
+                let pos_z = (z as f64) - 12.0;
+                
+                let material = if y == 0 {
+                    Material::stone_texturizado()
+                } else if y < 2 && (x == 0 || x == 3 || z == 0 || z == 3) {
+                    Material::oak_log_texturizado()
+                } else if y == 2 {
+                    Material::oak_leaves_texturizado()
+                } else {
+                    continue;
+                };
+                
+                let bloque = Box::new(Cubo::con_limites(
+                    Point3::new(pos_x, alturas[15][6] as f64 + y as f64, pos_z),
+                    Point3::new(pos_x + 1.0, alturas[15][6] as f64 + y as f64 + 1.0, pos_z + 1.0),
+                    material
+                ));
+                escena.agregar_objeto(bloque);
+            }
+        }
+    }
+    
+    // Torre alta
+    for y in 0..8 {
+        let torre = Box::new(Cubo::con_limites(
+            Point3::new(-10.0, alturas[5][20] as f64 + y as f64, 5.0),
+            Point3::new(-9.0, alturas[5][20] as f64 + y as f64 + 1.0, 6.0),
+            if y < 6 { Material::stone_texturizado() } else { Material::oak_log_texturizado() }
+        ));
+        escena.agregar_objeto(torre);
+    }
+    
+    // Puente sobre el lago
+    for x in -2..3 {
+        let puente = Box::new(Cubo::con_limites(
+            Point3::new(x as f64, 3.0, -5.0),
+            Point3::new(x as f64 + 1.0, 4.0, -4.0),
+            Material::oak_log_texturizado()
+        ));
+        escena.agregar_objeto(puente);
+    }
+    
+    println!("✅ DIORAMA MINECRAFT COMPLETO generado:");
+    println!("   🏞️ Terreno natural 30x30 con colinas");
+    println!("   🌳 10 árboles completos con hojas");
+    println!("   🌊 1 lago natural");
+    println!("   🏠 1 casa pequeña");
+    println!("   🗼 1 torre alta");
+    println!("   🌉 1 puente");
+    println!("   🧱 {} objetos totales", escena.objetos.len());
+    
+    let size = 10; // Mundo más pequeño para debug
     let mut alturas = vec![vec![0i32; size]; size]; // Mapa de alturas
     
     // GENERAR TERRENO ORGÁNICO CON RUIDO
-    use std::f64::consts::PI;
     for x in 0..size {
         for z in 0..size {
             // Múltiples ondas de ruido para terreno natural
@@ -430,8 +608,8 @@ pub fn crear_escena_minecraft_simple() -> Escena {
             let altura_max = alturas[x][z];
             
             for y in 0..altura_max {
-                let pos_x = (x as f64 - size as f64 / 2.0);
-                let pos_z = (z as f64 - size as f64 / 2.0);
+                let pos_x = x as f64 - size as f64 / 2.0;
+                let pos_z = z as f64 - size as f64 / 2.0;
                 let pos_y = y as f64;
                 
                 let material = if y == altura_max - 1 {
@@ -464,8 +642,8 @@ pub fn crear_escena_minecraft_simple() -> Escena {
     for &(tree_x, tree_z) in &posiciones_arboles {
         if tree_x < size && tree_z < size {
             let altura_base = alturas[tree_x][tree_z];
-            let pos_x = (tree_x as f64 - size as f64 / 2.0);
-            let pos_z = (tree_z as f64 - size as f64 / 2.0);
+            let pos_x = tree_x as f64 - size as f64 / 2.0;
+            let pos_z = tree_z as f64 - size as f64 / 2.0;
             
             // Tronco (4-6 bloques de altura)
             let altura_tronco = 4 + (tree_x + tree_z) % 3;
@@ -512,8 +690,8 @@ pub fn crear_escena_minecraft_simple() -> Escena {
                 let distancia = ((dx * dx + dz * dz) as f64).sqrt();
                 
                 if distancia <= radio_lago as f64 {
-                    let pos_x = (x as f64 - size as f64 / 2.0);
-                    let pos_z = (z as f64 - size as f64 / 2.0);
+                    let pos_x = x as f64 - size as f64 / 2.0;
+                    let pos_z = z as f64 - size as f64 / 2.0;
                     let altura_agua = (alturas[x][z] - 2).max(1);
                     
                     let agua = Box::new(Cubo::con_limites(
@@ -537,8 +715,12 @@ pub fn crear_escena_minecraft_simple() -> Escena {
     println!("   � Superficie de grass con dirt y stone por capas");
     println!("   🌳 10 árboles individuales con troncos y hojas naturales");
     println!("   🌊 1 lago natural formado por bloques de agua");
-    println!("   🧱 {} bloques individuales total", "Miles de");
+    println!("   🧱 {} objetos totales", escena.objetos.len());
+    
+    // Agregar iluminación
+    for luz in crear_iluminacion_minecraft() {
+        escena.agregar_luz(luz);
+    }
     
     escena
 }
-
