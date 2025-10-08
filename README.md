@@ -283,3 +283,10 @@ Proyecto academico desarrollado para el curso de **Graficas por Computadora**.
 **Hecho con  usando Rust**
 
 </div>
+
+##  Video: 
+
+
+https://github.com/user-attachments/assets/22cfd35e-9788-4e52-b75b-7cb31bd5ef43
+
+
