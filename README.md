@@ -1,199 +1,285 @@
-# 🌅 Diorama de Raytracing - Paisaje Minecraft Sunset
+﻿<div align="center">
 
-### Elementos Principales (Basado en el Proyecto Original)
-- **🌍 Terreno Ondulado**: Superficie generada proceduraEl diorama replica fielmente el proyecto de referencia con:
-- 🌅 **Atmósfera de Atardecer**: Iluminación cálida con sol en posición de sunset
-- 🌍 **Terreno Procedural**: Superficie ondulada generada con funciones matemáticas
-- 🏞️ **Río Natural**: Agua semi-transparente con refracción y arena en el fondo
-- 🌳 **Ecosistema Completo**: Bosque de 35 árboles con tres especies diferentes
-- 🌸 **Biodiversidad**: 50 flores multicolores con tallos verdes
-- 🪨 **Geología Realista**: Rocas distribuidas de forma natural
-- ✨ **Efectos Avanzados**: Reflexiones, refracciones y sombras ray-traced
-- 🎨 **Paleta Sunset**: Colores cálidos que evocan un atardecer doradon alturas variables
-- **🏞️ Río Serpenteante**: Río azul con arena en el fondo que atraviesa el paisaje
-- **🌳 Bosque Variado**: 35 árboles de tres tipos (Oak, Cherry, Birch) con diferentes alturas
-- **🌸 Flores Silvestres**: 50 flores coloridas dispersas por el terreno (5 colores diferentes)
-- **🪨 Rocas Decorativas**: 20 rocas de diferentes tamaños distribuidas naturalmente
-- **🌅 Iluminación de Atardecer**: Sol en ángulo de 40° con colores cálidos de sunset
-- **🎨 Skybox Degradado**: Cielo con transición de naranja claro a naranja intensoecto de raytracing que renderiza un paisaje de Minecraft con iluminación de atardecer, terreno ondulado, río, árboles y flores. Diorama de Raytracing - Paisaje Minecraft
+#  Diorama Minecraft - Ray Tracing en Tiempo Real
 
-Un proyecto de raytracing que renderiza un paisaje típico de Minecraft con casa, árboles, lago y montañas.
+### Proyecto de Graficas por Computadora
 
-## 🎯 Características Implementadas
+![Rust](https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white)
+![Raylib](https://img.shields.io/badge/Raylib-5.0-red?style=for-the-badge)
+![OpenGL](https://img.shields.io/badge/OpenGL-3.3-blue?style=for-the-badge&logo=opengl&logoColor=white)
+![License](https://img.shields.io/badge/License-Academic-green?style=for-the-badge)
 
-### ✅ Requerimientos Cumplidos (100/100 puntos)
+**Renderizado 3D en tiempo real con sombras ray-traced | 60 FPS | Generacion procedural**
 
-- **[30 puntos] Complejidad de la escena**: Paisaje completo con casa, árboles, lago, montaña y elementos decorativos
-- **[20 puntos] Atractivo visual**: Estética auténtica de Minecraft con colores y formas reconocibles
-- **[20 puntos] Rotación y zoom de cámara**: Sistema completo de navegación orbital
-- **[25 puntos] Materiales diferentes** (5 × 5 puntos):
-  1. **Piedra**: Gris clásico de Minecraft, completamente mate
-  2. **Madera de Roble**: Café característico, textura natural
-  3. **Oro**: Amarillo brillante con reflexiones
-  4. **Vidrio**: Transparente azulado con refracción
-  5. **Césped**: Verde Minecraft auténtico
-  6. **Agua**: Azul clásico semi-transparente con refracción
-  7. **Lava**: Naranja-rojo emisivo brillante
-  8. **Tierra**: Café oscuro mate
-  9. **Adoquín**: Gris texturizado
-  10. **Hojas**: Verde oscuro para árboles
-- **[10 puntos] Refracción**: Implementada en vidrio y agua
-- **[5 puntos] Reflexión**: Implementada en oro y superficies reflectantes
-- **[20 puntos] Skybox**: Cielo azul característico de Minecraft
-
-## 🛠️ Tecnologías Utilizadas
-
-- **Lenguaje**: Rust (sin librerías externas de raytracing)
-- **Matemáticas**: nalgebra para vectores y matrices
-- **Imágenes**: image para exportación PNG
-- **Generación aleatoria**: rand para anti-aliasing
-
-## 🏗️ Estructura del Proyecto
-
-```
-src/
-├── main.rs           # Programa principal y bucle de renderizado
-├── geometria.rs      # Rayos, intersecciones, cubos, esferas, planos
-├── materiales.rs     # Definición de materiales con propiedades físicas
-├── camara.rs         # Sistema de cámara con rotación y zoom
-├── iluminacion.rs    # Sistema de luces puntuales y direccionales
-└── escena.rs         # Construcción del diorama completo
-```
-
-## 🎮 Controles de Cámara
-
-El sistema de cámara permite:
-- **Rotación horizontal**: Orbitar alrededor del castillo
-- **Rotación vertical**: Cambiar el ángulo de elevación
-- **Zoom**: Acercarse y alejarse del objeto central
-- **Navegación suave**: Movimientos fluidos y limitados
-
-## 🎨 Diseño del Diorama
-
-### Elementos Principales
-- **� Casa de Minecraft**: Estructura clásica con base de adoquín, paredes de madera y ventanas de vidrio
-- **🌊 Lago Natural**: Agua azul transparente típica del juego
-- **🌳 Árboles**: Troncos de madera de roble con coronas de hojas verdes
-- **⛰️ Montaña de Piedra**: Formación rocosa con piedra y adoquín
-- **🔥 Pozo de Lava**: Lava naranja emisiva
-- **� Antorchas**: Elementos dorados brillantes para iluminación
-
-### Paleta de Colores Minecraft Auténtica
-- **Piedra**: Gris clásico (#808080)
-- **Madera de Roble**: Café natural (#996633)
-- **Oro**: Amarillo brillante (#FFCC00)
-- **Vidrio**: Azul claro transparente (#CCE6FF)
-- **Césped**: Verde Minecraft (#4D9933)
-- **Agua**: Azul característico (#3366CC)
-- **Lava**: Naranja-rojo (#FF6600)
-- **Tierra**: Café oscuro (#663319)
-- **Adoquín**: Gris piedra (#666666)
-- **Hojas**: Verde oscuro (#336619)
-
-## 🚀 Cómo Ejecutar
-
-### Prerrequisitos
-
-1. **Instalar Rust** (si no está instalado):
-   ```powershell
-   # Windows
-   winget install Rustlang.Rust
-   ```
-   o desde https://rustup.rs/
-
-### Opciones de Renderizado
-
-#### 1. Renderizado Principal (Alta Calidad)
-```powershell
-cargo run --release
-```
-- Genera: `diorama_renderizado.png` (800x600, 16 muestras AA)
-- Tiempo: ~2-5 minutos
-
-#### 2. Vistas Múltiples (Rotación 360°)
-```powershell
-cargo run --release --bin vistas_multiples
-```
-- Genera: `diorama_vista_00.png` a `diorama_vista_07.png`
-- Resolución: 400x300, 4 muestras AA
-- Tiempo: ~30 segundos por vista
-
-#### 3. Verificar Compilación
-```powershell
-cargo check
-```
-
-### Archivos de Salida
-
-- **`diorama_renderizado.png`**: Imagen principal de alta calidad
-- **`diorama_vista_XX.png`**: 8 vistas orbitales del diorama
-- **`diorama_animado.gif`**: GIF animado (requiere ImageMagick)
-
-## ⚡ Rendimiento
-
-- **Resolución**: 800x600 píxeles
-- **Anti-aliasing**: 16 muestras por píxel
-- **Profundidad de recursión**: 10 niveles para reflexiones/refracciones
-- **Tiempo estimado**: 2-5 minutos en hardware moderno
-
-## 🎓 Aspectos Técnicos
-
-### Efectos de Raytracing Implementados
-- **Iluminación Phong**: Componentes difusa y especular
-- **Sombras**: Trazado de rayos hacia fuentes de luz
-- **Reflexiones**: Recursión para superficies reflectantes
-- **Refracciones**: Ley de Snell para materiales transparentes
-- **Anti-aliasing**: Muestreo múltiple con distribución aleatoria
-- **Corrección gamma**: Para colores realistas
-
-### Optimizaciones
-- **Intersección eficiente**: Algoritmos optimizados para cubos y esferas
-- **Límite de recursión**: Previene bucles infinitos
-- **Muestreo inteligente**: Anti-aliasing adaptativo
-
-## 🎥 Demo Visual
-
-### Imágenes Generadas
-
-- **`diorama_renderizado.png`**: Renderizado principal en alta calidad (800x600)
-- **`diorama_vista_XX.png`**: 8 vistas desde diferentes ángulos
-- **`diorama_animado.gif`**: GIF animado de 360° (opcional)
-
-### Crear GIF Animado
-
-Para crear un GIF animado que muestre el diorama desde todos los ángulos:
-
-1. **Instalar ImageMagick**:
-   ```powershell
-   winget install ImageMagick.ImageMagick
-   ```
-
-2. **Ejecutar el script**:
-   ```powershell
-   .\generar_gif.ps1
-   ```
-   o
-   ```cmd
-   generar_gif.bat
-   ```
-
-### Video de Demostración
-
-El diorama muestra un paisaje auténtico de Minecraft con:
-- � Casa típica con materiales reconocibles
-- 💎 Efectos de refracción en vidrio y agua
-- ✨ Reflexiones en superficies de oro
-- 🌊 Lago con agua transparente
-- 🔥 Pozo de lava emisiva
-- 🌳 Árboles con estructura cúbica característica
-- ⛰️ Montaña de piedra natural
-- 🌅 Cielo azul clásico de Minecraft
-
-## 📝 Notas de Desarrollo
-
-Este proyecto fue creado específicamente para cumplir con los requerimientos del curso de Gráficas por Computadora, implementando un raytracer completo desde cero sin usar librerías externas de renderizado. Cada material tiene propiedades físicas únicas y el diorama presenta una escena compleja y visualmente atractiva.
-
-El diseño sigue fielmente la estética visual de Minecraft, utilizando los colores, materiales y formas características del juego para crear un paisaje auténtico y reconocible. La estructura cúbica y los materiales están inspirados directamente en los bloques clásicos del juego.
+</div>
 
 ---
-**Desarrollado con ❤️ usando Rust y matemáticas 3D**
+
+![Diorama Preview](diorama_renderizado.png)
+
+---
+
+##  Descripcion
+
+Proyecto de renderizado 3D que combina **GPU rendering** (Raylib + OpenGL) con **CPU ray tracing** para crear un paisaje estilo Minecraft con iluminacion y sombras realistas.
+
+
+###  Objetivos del Proyecto
+
+-  Implementar sistema de renderizado 3D en tiempo real
+-  Calcular sombras mediante ray tracing
+-  Generar terreno y vegetacion de forma procedural
+-  Crear controles interactivos de camara
+-  Optimizar para 60 FPS constantes
+
+---
+
+##  Caracteristicas
+
+###  Renderizado
+- **Framework:** Raylib 5.0
+- **API Grafica:** OpenGL 3.3
+- **Resolucion:** 1400x900px
+- **Performance:** 60 FPS
+- **Objetos:** 2,500+ elementos
+
+###  Sombras Ray-Traced
+- Calculo en CPU
+- 15 pasos por rayo
+- Oclusion por arboles/rocas
+- Reduccion de brillo 50%
+
+###  Generacion Procedural
+- 35 arboles (3 tipos: Roble, Cerezo, Abedul)
+- 20 rocas aleatorias
+- 50 flores coloridas
+- Terreno 50x50 ondulado
+- Rio con transparencia
+
+###  Controles
+- **Click + Drag:** Rotar camara
+- **Rueda:** Zoom (20-100)
+- **ESC:** Salir
+
+---
+
+##  Instalacion
+
+### Requisitos Previos
+
+**1. Rust**
+```powershell
+winget install Rustlang.Rust
+```
+
+**2. LLVM/Clang**
+```powershell
+winget install LLVM.LLVM
+```
+
+**3. Variable de Entorno**
+```powershell
+$env:LIBCLANG_PATH = "C:\Program Files\LLVM\bin"
+```
+
+### Compilar y Ejecutar
+
+```bash
+# Clonar repositorio
+git clone https://github.com/Josero31/proyecto2_raycasting.git
+cd proyecto2_raycasting
+
+# Compilar en modo release
+cargo build --release
+
+# Ejecutar
+cargo run --release
+```
+
+---
+
+##  Estructura del Proyecto
+
+```
+proyecto2_raycasting/
+ src/
+    main.rs           # Codigo principal (511 lineas)
+                        # - Estructuras: Tree, Rock, Flower
+                        # - Funcion: is_in_shadow() (ray tracing)
+                        # - Funcion: apply_shadow() (sombreado)
+                        # - Loop: renderizado 60 FPS
+    camara.rs         # Camara (legacy)
+    escena.rs         # Escena (legacy)
+    materiales.rs     # Materiales (legacy)
+ texturas/             # Texturas
+ target/               # Binarios compilados
+ Cargo.toml            # Dependencias: raylib 5.0, rand 0.8
+ Cargo.lock            # Lock file
+ README.md             # Este archivo
+```
+
+---
+
+##  Documentacion Tecnica
+
+### Estructuras de Datos
+
+```rust
+// Arbol con tipo, posicion y geometria
+struct Tree {
+    x: f32, z: f32,
+    height: f32,
+    leaf_layers: i32,
+    tree_type: TreeType,
+}
+
+// Tipos de arboles disponibles
+enum TreeType { Oak, Cherry, Birch }
+
+// Roca con posicion y tamano
+struct Rock { x: f32, z: f32, size: f32 }
+
+// Flor con posicion y color
+struct Flower { x: f32, z: f32, color: Color }
+```
+
+### Algoritmo de Sombras (Ray Tracing)
+
+```rust
+fn is_in_shadow(x: f32, y: f32, z: f32, 
+                trees: &Vec<Tree>, 
+                rocks: &Vec<Rock>, 
+                light_dir: Vector3) -> bool {
+    let shadow_steps = 15;
+    let step_size = 0.6;
+    
+    for i in 1..shadow_steps {
+        let test_pos = Vector3::new(
+            x - light_dir.x * i as f32 * step_size,
+            y - light_dir.y * i as f32 * step_size,
+            z - light_dir.z * i as f32 * step_size,
+        );
+        
+        // Detectar oclusion por arboles y rocas
+        // ...
+    }
+    
+    false
+}
+
+fn apply_shadow(base_color: Color, in_shadow: bool) -> Color {
+    if in_shadow {
+        // Reducir brillo al 50%
+        Color::new(
+            (base_color.r as f32 * 0.5) as u8,
+            (base_color.g as f32 * 0.5) as u8,
+            (base_color.b as f32 * 0.5) as u8,
+            base_color.a,
+        )
+    } else {
+        base_color
+    }
+}
+```
+
+---
+
+##  Especificaciones
+
+| Categoria | Especificacion |
+|-----------|----------------|
+| **Lenguaje** | Rust (Edition 2021) |
+| **Framework** | Raylib 5.0 |
+| **API Grafica** | OpenGL 3.3 |
+| **Resolucion** | 1400900 px |
+| **FPS** | 60 (16.67ms/frame) |
+| **Terreno** | 5050 bloques (2,500) |
+| **Arboles** | 35 (Oak/Cherry/Birch) |
+| **Rocas** | 20 (tamano 2.0-5.0) |
+| **Flores** | 50 (rojo/amarillo) |
+| **Ray Tracing** | 15 pasos por sombra |
+| **Zoom** | 20-100 unidades |
+
+---
+
+##  Dependencias
+
+```toml
+[package]
+name = "diorama_raytracing"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+raylib = "5.0"  # Framework de renderizado 3D
+rand = "0.8"    # Generacion aleatoria
+```
+
+---
+
+##  Conceptos Implementados
+
+### Graficas por Computadora
+-  Renderizado 3D
+-  Transformaciones de camara
+-  Proyeccion perspectiva
+-  Iluminacion y sombreado
+-  Transparencia (agua)
+
+### Programacion Avanzada
+-  Ray tracing basico
+-  Generacion procedural
+-  Estructuras de datos
+-  Optimizacion de performance
+-  Manejo de eventos
+
+---
+
+##  Solucion de Problemas
+
+### Error: "libclang not found"
+
+**Solucion:**
+```powershell
+winget install LLVM.LLVM
+$env:LIBCLANG_PATH = "C:\Program Files\LLVM\bin"
+cargo build --release
+```
+
+### FPS bajos
+
+**Solucion:**
+```bash
+# SIEMPRE usar --release
+cargo run --release
+```
+
+### Controles no responden
+
+**Solucion:**
+- Click izquierdo: Mantener presionado mientras arrastra
+- Rueda: Mover con cursor dentro de la ventana
+- ESC: Presionar mientras ventana tiene foco
+
+---
+
+##  Licencia
+
+Proyecto academico desarrollado para el curso de **Graficas por Computadora**.
+
+---
+
+##  Autor
+
+**Proyecto Academico** - 2025  
+**Tecnologia:** Rust + Raylib 5.0 + OpenGL 3.3
+
+---
+
+<div align="center">
+
+###  Si te gusto este proyecto, dale una estrella!
+
+**Hecho con  usando Rust**
+
+</div>
